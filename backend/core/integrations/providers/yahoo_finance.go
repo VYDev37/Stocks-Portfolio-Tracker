@@ -37,10 +37,11 @@ type YahooFundamentalResponse struct {
 	} `json:"chart"`
 }
 
+// PriceProvider mendefinisikan kontrak untuk mengambil data harga aset.
 type PriceProvider interface {
-	GetChart(ticker string, timeframe string) (*domain.AssetChartResponse, error)
-	GetCurrentPrice(ticker string) (float64, error)
-	GetBatchPrices(tickers []string) (map[string]float64, error)
+	GetChart(ticker string, market string, timeframe string) (*domain.AssetChartResponse, error)
+	GetCurrentPrice(ticker string, market string) (float64, error)
+	GetBatchPrices(tickers []string, market string) (map[string]float64, error)
 }
 
 type priceProvider struct {
@@ -51,10 +52,23 @@ func NewPriceProvider() PriceProvider {
 	return &priceProvider{Client: &http.Client{Timeout: 10 * time.Second}}
 }
 
-func (s *priceProvider) fetchYahooChart(ticker string, queryParams string) (*YahooChartResponse, error) {
-	url := fmt.Sprintf("https://query1.finance.yahoo.com/v8/finance/chart/%s.JK%s", ticker, queryParams)
+func buildYahooSymbol(ticker string, market string) string {
+	ticker = strings.ReplaceAll(ticker, ".", "-")
+	switch strings.ToLower(market) {
+	case "indonesia", "idx":
+		return ticker + ".JK"
+	default:
+		return ticker
+	}
+}
 
-	req, _ := http.NewRequest("GET", url, nil)
+func (s *priceProvider) fetchYahooChart(yahooSymbol string, queryParams string) (*YahooChartResponse, error) {
+	url := fmt.Sprintf("https://query1.finance.yahoo.com/v8/finance/chart/%s%s", yahooSymbol, queryParams)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Connection", "keep-alive")
@@ -110,7 +124,9 @@ func parseYahooCandles(data *YahooChartResponse) []domain.Candle {
 	return candles
 }
 
-func (s *priceProvider) GetChart(ticker string, timeframe string) (*domain.AssetChartResponse, error) {
+func (s *priceProvider) GetChart(ticker string, market string, timeframe string) (*domain.AssetChartResponse, error) {
+	yahooSymbol := buildYahooSymbol(ticker, market)
+
 	timeframe = strings.ToLower(timeframe)
 	if strings.HasSuffix(timeframe, "m") && !strings.HasSuffix(timeframe, "mo") {
 		timeframe = strings.Replace(timeframe, "m", "mo", 1)
@@ -142,7 +158,7 @@ func (s *priceProvider) GetChart(ticker string, timeframe string) (*domain.Asset
 
 	for _, rangeQuery := range ranges {
 		var data *YahooChartResponse
-		data, err = s.fetchYahooChart(ticker, rangeQuery)
+		data, err = s.fetchYahooChart(yahooSymbol, rangeQuery)
 		if err != nil {
 			continue
 		}
@@ -189,10 +205,14 @@ func (s *priceProvider) GetChart(ticker string, timeframe string) (*domain.Asset
 	}, nil
 }
 
-func (s *priceProvider) GetCurrentPrice(ticker string) (float64, error) {
-	url := fmt.Sprintf("https://query1.finance.yahoo.com/v8/finance/chart/%s.JK?range=1d&interval=1d", ticker)
+func (s *priceProvider) GetCurrentPrice(ticker string, market string) (float64, error) {
+	yahooSymbol := buildYahooSymbol(ticker, market)
+	url := fmt.Sprintf("https://query1.finance.yahoo.com/v8/finance/chart/%s?range=1d&interval=1d", yahooSymbol)
 
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return 0, err
+	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
 	resp, err := s.Client.Do(req)
@@ -216,7 +236,7 @@ func (s *priceProvider) GetCurrentPrice(ticker string) (float64, error) {
 	return data.Chart.Result[0].Meta.RegularMarketPrice, nil
 }
 
-func (s *priceProvider) GetBatchPrices(tickers []string) (map[string]float64, error) {
+func (s *priceProvider) GetBatchPrices(tickers []string, market string) (map[string]float64, error) {
 	result := make(map[string]float64)
 	resChan := make(chan struct {
 		ticker string
@@ -229,7 +249,7 @@ func (s *priceProvider) GetBatchPrices(tickers []string) (map[string]float64, er
 		wg.Add(1)
 		go func(ticker string) {
 			defer wg.Done()
-			price, err := s.GetCurrentPrice(ticker)
+			price, err := s.GetCurrentPrice(ticker, market)
 			if err == nil {
 				resChan <- struct {
 					ticker string

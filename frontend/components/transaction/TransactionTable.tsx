@@ -99,17 +99,17 @@ export default React.memo(function TransactionTable({ transactions, loading, use
                                                 {Formatter.formatNumber(transaction.quantity / 100)}
                                             </TableCell>
                                             <TableCell className="text-right text-slate-300">
-                                                {Formatter.formatCurrency(isSell ? transaction.sell_price_unit : transaction.entry_price_unit)}
+                                                {Formatter.formatCurrency(isSell ? transaction.sell_price_unit : transaction.entry_price_unit, transaction.currency)}
                                             </TableCell>
                                             <TableCell className="text-right font-medium text-white">
-                                                {Formatter.formatCurrency(transaction.base_price)}
+                                                {Formatter.formatCurrency(transaction.base_price, transaction.currency)}
                                             </TableCell>
                                             <TableCell className="text-right text-slate-400 text-xs">
-                                                {Formatter.formatCurrency(transaction.transaction_fee)}
+                                                {Formatter.formatCurrency(transaction.transaction_fee, transaction.currency)}
                                             </TableCell>
                                             <TableCell className="text-right text-slate-400 text-xs">
                                                 <div className="flex flex-col items-end">
-                                                    <span className="font-mono">{Formatter.formatCurrency(transaction.price)}</span>
+                                                    <span className="font-mono">{Formatter.formatCurrency(transaction.price, transaction.currency)}</span>
                                                     {transaction.provider && (
                                                         <span className="text-[9px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded mt-1 uppercase tracking-wider font-sans">
                                                             {transaction.provider}
@@ -119,7 +119,7 @@ export default React.memo(function TransactionTable({ transactions, loading, use
                                             </TableCell>
                                             <TableCell className={`text-right text-slate-400 text-xs ${color}`}>
                                                 {transaction.realized_pnl === 0 ? "-" :
-                                                    `${sign}${Formatter.formatCurrency(Math.abs(transaction.realized_pnl))} 
+                                                    `${sign}${Formatter.formatCurrency(Math.abs(transaction.realized_pnl), transaction.currency)} 
                                                                 (${sign}${Formatter.formatNumber(Math.abs(rPnlPercentage))}%)`}
                                             </TableCell>
                                             <TableCell className="text-center text-slate-400 text-xs">

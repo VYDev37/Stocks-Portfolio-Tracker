@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useGetNotes } from "@/hooks";
+import { useJournalsClient } from "@/hooks";
 import { NoteCard, NoteEmpty, NoteSheet } from "@/components/journal";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -9,32 +8,21 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function JournalsClient() {
-    const [open, setOpen] = useState(false);
-    const { notes, refreshNote, loading } = useGetNotes();
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 20;
-
-    const paginatedNotes = useMemo(() => {
-        if (!notes)
-            return [];
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return notes.slice(startIndex, startIndex + itemsPerPage);
-    }, [notes, currentPage]);
-
-    const totalPages = Math.ceil((notes?.length || 0) / itemsPerPage);
+    const {
+        open,
+        setOpen,
+        notes,
+        refreshNote,
+        loading,
+        currentPage,
+        setCurrentPage,
+        paginatedNotes,
+        totalPages,
+        pages,
+        itemsPerPage
+    } = useJournalsClient();
 
     const renderPaginationDots = () => {
-        let pages: (number | string)[] = [];
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                pages.push(i);
-            } else if (i === currentPage - 2 || i === currentPage + 2) {
-                pages.push('...');
-            }
-        }
-        pages = pages.filter((item, index) => item !== '...' || pages[index - 1] !== '...');
-
         return pages.map((page, index) => {
             if (page === '...') {
                 return <span key={`ellipsis-${index}`} className="px-2 text-slate-500">...</span>;

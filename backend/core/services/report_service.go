@@ -138,13 +138,47 @@ func (s *reportService) exportPositions(f *excelize.File, userID uint64) error {
 		return fmt.Errorf("portfolio is empty")
 	}
 
-	prices, _ := s.provider.GetBatchPrices(tickers)
+	// Kelompokkan ticker berdasarkan market (konsisten dengan position_service)
+	idxTickers := []string{}
+	usTickers := []string{}
+	for _, p := range pos {
+		if resolveMarket(p.PositionType) == "america" {
+			usTickers = append(usTickers, p.Ticker)
+		} else {
+			idxTickers = append(idxTickers, p.Ticker)
+		}
+	}
+
+	prices := make(map[string]float64)
+	if len(idxTickers) > 0 {
+		idxPrices, _ := s.provider.GetBatchPrices(idxTickers, "indonesia")
+		for k, v := range idxPrices {
+			prices["indonesia_"+k] = v
+		}
+	}
+	if len(usTickers) > 0 {
+		usPrices, _ := s.provider.GetBatchPrices(usTickers, "america")
+		for k, v := range usPrices {
+			prices["america_"+k] = v
+		}
+	}
+
 	for i, p := range pos {
-		currentPrice := prices[p.Ticker] * p.TotalQty
+		market := resolveMarket(p.PositionType)
+		currency := "IDR"
+		if market == "america" {
+			currency = "USD"
+		}
+
+		currentPrice := prices[market+"_"+p.Ticker] * p.TotalQty
 		if currentPrice <= 0 || p.InvestedTotal <= 0 {
 			continue
 		}
-		currentValue += currentPrice
+		if currency == "USD" {
+			currentValue += currentPrice
+		} else {
+			currentValue += currentPrice
+		}
 
 		delta := currentPrice - p.InvestedTotal
 		pnlPercent := math.Abs((delta / p.InvestedTotal) * 100)
@@ -153,14 +187,25 @@ func (s *reportService) exportPositions(f *excelize.File, userID uint64) error {
 		if delta < 0 {
 			percentStr = "(" + percentStr + ")"
 		}
+
+		fmtInvested := format.FormatCurrency(p.InvestedTotal)
+		fmtMarket := format.FormatCurrency(currentPrice)
+		fmtDelta := format.FormatCurrency(delta)
+
+		if currency == "USD" {
+			fmtInvested = fmt.Sprintf("$%s", format.FormatNumber(p.InvestedTotal))
+			fmtMarket = fmt.Sprintf("$%s", format.FormatNumber(currentPrice))
+			fmtDelta = fmt.Sprintf("$%s", format.FormatNumber(delta))
+		}
+
 		writer.WriteRow([]interface{}{
 			i + 1,
 			p.Ticker,
-			format.FormatCurrency(p.InvestedTotal / p.TotalQty),
-			format.FormatCurrency(p.InvestedTotal),
+			format.FormatNumber(p.InvestedTotal / p.TotalQty),
+			fmtInvested,
 			format.FormatNumber(p.TotalQty),
-			format.FormatCurrency(currentPrice),
-			format.FormatCurrency(delta),
+			fmtMarket,
+			fmtDelta,
 			percentStr,
 		})
 	}
@@ -168,14 +213,11 @@ func (s *reportService) exportPositions(f *excelize.File, userID uint64) error {
 	writer.BuildTable(sectionName, startRow, len(header))
 	writer.SkipRow()
 
-	header2 := []interface{}{"NAME", "AMOUNT"}
+	header2 := []interface{}{"NAME", "AMOUNT (IDR)", "AMOUNT (USD)"}
 	startRow2 := writer.CurrentRow
 
 	writer.WriteHeader(header2)
-
-	writer.WriteRow([]interface{}{"Total invested amount", format.FormatCurrency(portfolio.TotalEquity)})
-	writer.WriteRow([]interface{}{"Market value", format.FormatCurrency(currentValue)})
-
+	writer.WriteRow([]interface{}{"Total invested / market value", format.FormatCurrency(portfolio.TotalEquityIDR), fmt.Sprintf("$%s", format.FormatNumber(portfolio.TotalEquityUSD))})
 	writer.BuildTable(sectionName+"_2", startRow2, len(header2))
 	return nil
 }

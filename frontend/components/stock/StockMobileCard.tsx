@@ -91,7 +91,7 @@ export default function StockMobileCard({ stocks, loading, handleAddRedirect, ha
                         <div className="grid grid-cols-2 gap-4 py-2 border-y border-white/5">
                             <div>
                                 <div className="text-[10px] text-zinc-500 uppercase">Invested Total</div>
-                                <div className="text-sm font-medium">{Formatter.formatCurrency(stock.invested_total)}</div>
+                                <div className="text-sm font-medium">{Formatter.formatCurrency(stock.invested_total, stock.currency)}</div>
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] text-zinc-500 uppercase">Total Qty</div>
@@ -101,7 +101,7 @@ export default function StockMobileCard({ stocks, loading, handleAddRedirect, ha
                         <div className="grid grid-cols-2 gap-4 py-2 border-y border-white/5">
                             <div>
                                 <div className="text-[10px] text-zinc-500 uppercase">Current Price</div>
-                                <div className="text-sm font-medium">{Formatter.formatCurrency(currentPrice)}</div>
+                                <div className="text-sm font-medium">{Formatter.formatCurrency(currentPrice, stock.currency)}</div>
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] text-zinc-400 uppercase tracking-wider">PnL Unrealized</div>

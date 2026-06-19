@@ -45,7 +45,7 @@ export default React.memo(function TransactionCard({ transactions, loading }: Tr
                                     </div>
                                     <span className="text-sm font-medium text-white">
                                         {Formatter.formatCurrency(isCashflow ? transaction.base_price
-                                            : isSell ? transaction.sell_price_unit : transaction.entry_price_unit)}
+                                            : isSell ? transaction.sell_price_unit : transaction.entry_price_unit, transaction.currency)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center text-xs text-slate-400">
@@ -86,21 +86,21 @@ export default React.memo(function TransactionCard({ transactions, loading }: Tr
                                     </div>
                                     <div className="flex justify-between items-center py-3 border-b border-slate-800/50">
                                         <span className="text-slate-400 text-sm">Price per unit</span>
-                                        <span className="font-medium text-white text-sm">{Formatter.formatCurrency(isSell ? transaction.sell_price_unit : transaction.entry_price_unit)}</span>
+                                        <span className="font-medium text-white text-sm">{Formatter.formatCurrency(isSell ? transaction.sell_price_unit : transaction.entry_price_unit, transaction.currency)}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-3 border-b border-slate-800/50">
                                         <span className="text-slate-400 text-sm">Fee</span>
-                                        <span className="font-medium text-white text-sm">{Formatter.formatCurrency(transaction.transaction_fee)}</span>
+                                        <span className="font-medium text-white text-sm">{Formatter.formatCurrency(transaction.transaction_fee, transaction.currency)}</span>
                                     </div>
                                 </>
                             )}
                             <div className="flex justify-between items-center py-3 border-b border-slate-800/50">
                                 <span className="text-slate-400 text-sm">Base Price</span>
-                                <span className="font-medium text-white text-sm">{transaction.base_price <= 0 ? "-" : Formatter.formatCurrency(transaction.base_price)}</span>
+                                <span className="font-medium text-white text-sm">{transaction.base_price <= 0 ? "-" : Formatter.formatCurrency(transaction.base_price, transaction.currency)}</span>
                             </div>
                             <div className="flex justify-between items-center py-3 border-b border-slate-800/50">
                                 <span className="text-slate-400 text-sm">Total Value</span>
-                                <span className="font-medium text-white text-sm">{Formatter.formatCurrency(transaction.price)}</span>
+                                <span className="font-medium text-white text-sm">{Formatter.formatCurrency(transaction.price, transaction.currency)}</span>
                             </div>
                             <div className="flex justify-between items-center py-3">
                                 {isCashflow ? (
@@ -115,7 +115,7 @@ export default React.memo(function TransactionCard({ transactions, loading }: Tr
                                         <span className="text-slate-400 text-sm">Realized PnL</span>
                                         <div className={`font-medium text-sm text-right ${color}`}>
                                             {transaction.realized_pnl === 0 ? "-" :
-                                                `${sign}${Formatter.formatCurrency(Math.abs(transaction.realized_pnl))} 
+                                                `${sign}${Formatter.formatCurrency(Math.abs(transaction.realized_pnl), transaction.currency)} 
                                                             (${sign}${Formatter.formatNumber(Math.abs(rPnlPercentage))}%)`}
                                         </div>
                                     </>

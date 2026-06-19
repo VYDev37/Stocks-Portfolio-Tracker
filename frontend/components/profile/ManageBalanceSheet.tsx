@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -8,110 +7,34 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Wallet, ArrowUpCircle, ArrowDownCircle, RefreshCw, Plus } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-import { useUser } from "@/stores";
-import { useTransaction } from "@/stores";
-import { Formatter } from "@/lib";
-
-import { useUpdateBalance } from "@/hooks";
-import { AddAccountModal } from ".";
-import type { UserBalanceReq } from "@/schemas/balance.schema";
 import { Textarea } from "@/components/ui/textarea";
+
+import { Formatter } from "@/lib";
+import { useManageBalance } from "@/hooks";
+import { AddAccountModal } from ".";
 
 interface ManageBalanceSheetProps {
     children?: React.ReactNode;
     mode: 'stock' | 'cash';
+    currency?: string;
 }
 
-interface AccountProp {
-    provider_name: string;
-    account_no: string;
-    is_new: boolean;
-}
-
-export default function ManageBalanceSheet({ children, mode }: ManageBalanceSheetProps) {
-    const defaultData: UserBalanceReq = {
-        amount: 0, mode: "add", title: "",
-        note: "", fee: 0, date: new Date(),
-        bank_src: "", asset_type: mode === 'stock' ? "stock_balance" : "cash_balance",
-        provider: "", account_no: ""
-    };
-
-    const [open, setOpen] = useState(false);
-    const [formData, setFormData] = useState<UserBalanceReq>(defaultData);
-
-    const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-
-    const refetch = useTransaction((state) => state.refetch);
-    const fetchAccounts = useTransaction((state) => state.fetchAccounts);
-    const availableAccounts = useTransaction((state) => state.availableAccounts);
-    const { updateBalance, loading, error } = useUpdateBalance();
-
-    const user = useUser((state) => state.user);
-    const refreshProfile = useUser((state) => state.refreshProfile);
-
-    const maxBalance = availableAccounts.find(x => x.account_no === formData.account_no && x.provider_name === formData.provider)?.amount || 0;
-    const [localNewAccounts, setLocalNewAccounts] = useState<AccountProp[]>([]);
-
-    const accountsToDisplay = [
-        ...(availableAccounts || []).map(acc => ({
-            provider_name: acc.provider_name,
-            account_no: acc.account_no,
-            is_new: false
-        })),
-        ...localNewAccounts
-    ];
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        //console.log(formData);
-        const totalOut = formData.amount + formData.fee;
-        //console.log(formData, user, maxBalance, totalOut);
-        if (formData.mode === "rem" && totalOut > maxBalance) {
-            alert("Insufficient balance.");
-            return;
-        }
-
-        const success = await updateBalance(formData);
-        if (success) {
-            setOpen(false);
-
-            await refreshProfile(true);
-            await refetch(true);
-            await fetchAccounts(mode === "stock" ? "stock_balance" : "cash_balance");
-
-            setFormData(defaultData);
-        }
-    }
-
-    const handleFormChange = (field: keyof UserBalanceReq, value: string) => {
-        let val: string | number | Date = value;
-        if (["fee", "amount"].includes(field)) {
-            const numVal = Number(value.replace(/[^0-9]/g, ""))
-            val = numVal;
-
-            if (formData.mode === "rem" && field === "amount" && Number(numVal) > maxBalance)
-                val = maxBalance
-        }
-        else if (field === "date") {
-            val = new Date(value);
-        }
-
-        setFormData({ ...formData, [field]: val });
-    }
-
-    const onAddAccount = (selectedProvider: string, accountNo: string) => {
-        const newAccount: AccountProp = { provider_name: selectedProvider, account_no: accountNo, is_new: true };
-        setLocalNewAccounts(prev => [...prev, newAccount]);
-        setFormData(prev => ({
-            ...prev,
-            provider: selectedProvider,
-            bank_src: selectedProvider,
-            account_no: accountNo,
-            mode: prev.mode === "rem" ? "add" : prev.mode
-        }));
-        setShowAddAccountModal(false);
-    }
+export default function ManageBalanceSheet({ children, mode, currency }: ManageBalanceSheetProps) {
+    const {
+        open,
+        setOpen,
+        formData,
+        setFormData,
+        showAddAccountModal,
+        setShowAddAccountModal,
+        accountsToDisplay,
+        maxBalance,
+        loading,
+        error,
+        handleSubmit,
+        handleFormChange,
+        onAddAccount
+    } = useManageBalance({ mode });
 
     const renderForm = (modeLabel: string, colorClass: string) => (
         <form onSubmit={handleSubmit} className="space-y-6 py-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ">
@@ -134,7 +57,7 @@ export default function ManageBalanceSheet({ children, mode }: ManageBalanceShee
                         : "Amount"}
                 </Label>
                 <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">{currency === "USD" ? "$" : "Rp"}</span>
                     <Input id="amount" type="text" inputMode="numeric" placeholder="0.00" value={formData.amount}
                         onChange={(e) => handleFormChange("amount", e.target.value)} className="pl-10 bg-transparent border-none text-md h-14 focus-visible:ring-0 focus-visible:ring-offset-0 font-bold"
                         required />
@@ -179,7 +102,7 @@ export default function ManageBalanceSheet({ children, mode }: ManageBalanceShee
                                     const val = `${acc.provider_name}-${acc.account_no}`;
                                     return (
                                         <SelectItem key={val + index} value={val} className="text-xs font-semibold">
-                                            {acc.provider_name} - {acc.account_no}
+                                            {acc.provider_name} - {acc.account_no} {acc.currency ? `(${acc.currency})` : ''}
                                         </SelectItem>
                                     );
                                 })}
@@ -218,7 +141,7 @@ export default function ManageBalanceSheet({ children, mode }: ManageBalanceShee
                             Transaction Fee
                         </Label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">Rp</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">{currency === "USD" ? "$" : "Rp"}</span>
                             <Input id="fee" type="text" inputMode="numeric" placeholder="0.00" value={formData.fee} min={0}
                                 onChange={(e) => handleFormChange("fee", e.target.value)} className="pl-10 bg-transparent border-none text-md h-14 focus-visible:ring-0 focus-visible:ring-offset-0 font-bold" />
                         </div>

@@ -72,6 +72,20 @@ func (s *transactionService) GetLocalTransactions(userID uint64) ([]domain.Trans
 		return nil, err
 	}
 
+	balances, err := s.balRepo.GetBalances(userID, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a lookup map for currency by provider + account_no
+	currencyMap := make(map[string]string)
+	for _, b := range balances {
+		key := b.Provider + ":" + b.AccountNo
+		if b.Currency != "" {
+			currencyMap[key] = b.Currency
+		}
+	}
+
 	for _, t := range trans {
 		isTrade := t.TransactionType == "sell" || t.TransactionType == "buy"
 		if isTrade && t.Quantity <= 0 {
@@ -92,11 +106,37 @@ func (s *transactionService) GetLocalTransactions(userID uint64) ([]domain.Trans
 			sellPU = t.Price / t.Quantity
 		}
 
+		// Resolve currency
+		currency := "IDR"
+		key := t.Provider + ":" + t.AccountNo
+		if val, exists := currencyMap[key]; exists {
+			currency = val
+		} else {
+			// Fallback: search for any balance of this provider for the user
+			if t.Provider != "" {
+				for _, b := range balances {
+					if b.Provider == t.Provider && b.Currency != "" {
+						currency = b.Currency
+						break
+					}
+				}
+			} else {
+				// If provider is empty, check if there's any balance with empty provider
+				for _, b := range balances {
+					if b.Provider == "" && b.Currency != "" {
+						currency = b.Currency
+						break
+					}
+				}
+			}
+		}
+
 		result = append(result, domain.TransactionResponse{
 			Transaction:    t,
 			EntryPriceUnit: entryPU,
 			SellPriceUnit:  sellPU,
 			RealizedPnl:    realizedPnl,
+			Currency:       currency,
 		})
 	}
 

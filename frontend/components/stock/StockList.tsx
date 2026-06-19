@@ -1,72 +1,30 @@
 "use client"
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/stores";
-
 import { StockMobileCard, StockDesktopTable } from "@/components/stock";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AvailableAccount } from "@/schemas/transaction.schema";
+
+import { useStockList } from "@/hooks";
 
 export default function StockList() {
-    const router = useRouter();
-
-    const user = useUser((state) => state.user);
-    const isLoadingUser = useUser((state) => state.isLoading);
-    const isLoading = isLoadingUser || !user;
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [selectedFilter, setSelectedFilter] = useState<string>("all");
-    const itemsPerPage = 10;
-
-    const uniqueAccounts = useMemo(() => {
-        const accs: AvailableAccount[] = [];
-        const seen = new Set<string>();
-
-        (user?.positions.items || []).forEach(item => {
-            if (item.provider && item.account_no) {
-                const key = `${item.provider}-${item.account_no}`;
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    accs.push({ provider_name: item.provider, account_no: item.account_no });
-                }
-            }
-        });
-        return accs;
-    }, [user]);
-
-    const filteredStocks = useMemo(() => {
-        let items = [...(user?.positions.items || [])];
-        if (selectedFilter !== "all") {
-            const [prov, accNo] = selectedFilter.split("-");
-            const target = uniqueAccounts.find(x => `${x.provider_name}-${x.account_no}` === selectedFilter);
-            if (target) {
-                items = items.filter(p => p.provider === target.provider_name && p.account_no === target.account_no);
-            }
-        }
-        return items.sort((a, b) => a.ticker.localeCompare(b.ticker));
-    }, [user?.positions.items, selectedFilter, uniqueAccounts]);
-
-    const paginatedStocks = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return filteredStocks.slice(startIndex, startIndex + itemsPerPage);
-    }, [filteredStocks, currentPage]);
-
-    const totalPages = Math.ceil(filteredStocks.length / itemsPerPage);
+    const {
+        isLoading,
+        currentPage,
+        setCurrentPage,
+        selectedFilter,
+        setSelectedFilter,
+        uniqueAccounts,
+        filteredStocks,
+        paginatedStocks,
+        totalPages,
+        pages,
+        handleTickerChange,
+        handleAddRedirect,
+        itemsPerPage
+    } = useStockList();
 
     const renderPaginationDots = () => {
-        let pages: (number | string)[] = [];
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                pages.push(i);
-            } else if (i === currentPage - 2 || i === currentPage + 2) {
-                pages.push('...');
-            }
-        }
-        pages = pages.filter((item, index) => item !== '...' || pages[index - 1] !== '...');
-
         return pages.map((page, index) => {
             if (page === '...') {
                 return <span key={`ellipsis-${index}`} className="px-2 text-slate-500">...</span>;
@@ -86,14 +44,6 @@ export default function StockList() {
             );
         });
     };
-
-    const handleTickerChange = (ticker: string) => {
-        router.push(`/admin/stocks?symbol=${ticker}`);
-    };
-
-    const handleAddRedirect = (action: string = "add", ticker: string = "") => {
-        router.push(`?action=${action}&ticker=${ticker}`, { scroll: false });
-    }
 
     return (
         <div className="space-y-4">

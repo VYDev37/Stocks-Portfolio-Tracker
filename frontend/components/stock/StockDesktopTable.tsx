@@ -26,7 +26,7 @@ export default function StockDesktopTable({ stocks, loading, handleAddRedirect, 
                     <TableRow>
                         <TableHead className="w-[100px]">Ticker</TableHead>
                         <TableHead>Total Qty (Lot)</TableHead>
-                        <TableHead>Invested Total (Rp)</TableHead>
+                        <TableHead>Invested Total</TableHead>
                         <TableHead>Current Value</TableHead>
                         <TableHead>PnL Unrealized</TableHead>
                         <TableHead>Last Updated</TableHead>
@@ -71,8 +71,8 @@ export default function StockDesktopTable({ stocks, loading, handleAddRedirect, 
                                         <div>{stock.ticker}</div>
                                     </TableCell>
                                     <TableCell>{Formatter.formatNumber(stock.total_qty / 100)}</TableCell>
-                                    <TableCell>{Formatter.formatCurrency(stock.invested_total)}</TableCell>
-                                    <TableCell>{Formatter.formatCurrency(currentPrice)}</TableCell>
+                                    <TableCell>{Formatter.formatCurrency(stock.invested_total, stock.currency)}</TableCell>
+                                    <TableCell>{Formatter.formatCurrency(currentPrice, stock.currency)}</TableCell>
                                     <TableCell className={isProfit ? "text-emerald-400" : "text-red-400"}>
                                         {pnlSign}{Formatter.formatNumber(stock.unrealized_pnl, true)} ({pnlSign}{Formatter.formatNumber(stock.pnl_percentage)}%)
                                     </TableCell>

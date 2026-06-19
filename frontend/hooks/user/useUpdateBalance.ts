@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { axios } from "@/lib";
@@ -27,7 +27,8 @@ export default function useUpdateBalance() {
                 note: validated.note,
                 title: validated.title,
                 provider: validated.provider,
-                account_no: validated.account_no
+                account_no: validated.account_no,
+                currency: validated.currency
             });
 
             return true;

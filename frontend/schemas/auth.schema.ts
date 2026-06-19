@@ -34,7 +34,8 @@ export const UserProfileSchema = z.object({
     balance: BalanceInfoSchema,
     positions: z.object({
         items: z.preprocess((val) => val === null ? [] : val, z.array(PortfolioItemSchema)),
-        total_equity: z.number().default(0)
+        total_equity_idr: z.number().default(0),
+        total_equity_usd: z.number().default(0)
     })
 });
 

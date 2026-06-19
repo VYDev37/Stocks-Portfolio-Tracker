@@ -31,7 +31,7 @@ export default function TerminalFeed({ logs, ticker, loading }: TerminalFeedProp
                     <div className="absolute inset-0 w-2 h-2 bg-emerald-400 rounded-full animate-ping opacity-25" />
                 </div>
                 <h4 className="text-[10px] font-black tracking-[0.3em] text-zinc-500 uppercase">
-                    REALTIME_FEED_TERMINAL
+                    REALTIME_FEED_TERMINAL (MOCK)
                 </h4>
                 <div className="ml-auto flex gap-4 text-[10px] font-bold text-zinc-600">
                     <span>LATENCY: <span className="text-emerald-500">14ms</span></span>

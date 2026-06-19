@@ -11,7 +11,7 @@ type Position struct {
 	Ticker            string  `gorm:"not null;index;" json:"ticker"`
 	TotalQty          float64 `gorm:"not null" json:"total_qty"` // bisa aja untuk crypto
 	InvestedTotal     float64 `gorm:"not null" json:"invested_total"`
-	PositionType      string  `gorm:"type:varchar(20);not null;default:'stocks'" json:"position_type"`    // stocks / crypto / futures
+	PositionType      string  `gorm:"type:varchar(20);not null;default:'stocks'" json:"position_type"`    // stocks (IDX) / stocks_us (NYSE/NASDAQ) / crypto / futures
 	PositionDirection string  `gorm:"type:varchar(10);not null;default:'LONG'" json:"position_direction"` // LONG / SHORT
 	TakeProfit        float64 `json:"tp_position"`
 	StopLoss          float64 `json:"sl_position"`
@@ -19,9 +19,10 @@ type Position struct {
 	AccountNo         string  `gorm:"type:varchar(20)" json:"account_no"`
 }
 
+// Issue (titip sini): Ketika add stocks_us balance, malah ga masuk ke db?
 type PositionAddReq struct {
-	Ticker        string  `json:"ticker" validate:"required,min=4,max=10"` // crypto coming soon
-	PositionType  string  `json:"position_type" validate:"required,oneof=stocks crypto futures"`
+	Ticker        string  `json:"ticker" validate:"required,min=1,max=10"`
+	PositionType  string  `json:"position_type" validate:"required,oneof=stocks stocks_us futures"`
 	TotalQty      float64 `json:"total_qty" validate:"required,gt=0"`
 	InvestedTotal float64 `json:"invested_total" validate:"required,gt=0"` // avg price to add (ex: buy 3 lot BBRI for 800k IDR, avg += 800k, qty += 3)
 	Fee           float64 `json:"fee" validate:"gte=0"`
@@ -40,9 +41,11 @@ type PortfolioItem struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 	Provider           string    `json:"provider"`
 	AccountNo          string    `json:"account_no"`
+	Currency           string    `json:"currency"`
 }
 
 type PortfolioResponse struct {
-	Items       []PortfolioItem `json:"items"`
-	TotalEquity float64         `json:"total_equity"`
+	Items          []PortfolioItem `json:"items"`
+	TotalEquityIDR float64         `json:"total_equity_idr"`
+	TotalEquityUSD float64         `json:"total_equity_usd"`
 }

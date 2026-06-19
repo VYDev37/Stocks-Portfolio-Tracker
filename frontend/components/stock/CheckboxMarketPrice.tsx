@@ -7,9 +7,10 @@ interface CheckboxMarketPriceProps {
     onChange: (checked: boolean) => void;
     isLoading: boolean;
     currentPrice: number;
+    currency: string;
 }
 
-export default function CheckboxMarketPrice({ checked, onChange, isLoading, currentPrice }: CheckboxMarketPriceProps) {
+export default function CheckboxMarketPrice({ checked, onChange, isLoading, currentPrice, currency }: CheckboxMarketPriceProps) {
     return (
         <div className="flex flex-row items-center gap-2">
             <Input
@@ -21,7 +22,7 @@ export default function CheckboxMarketPrice({ checked, onChange, isLoading, curr
             />
             <Label htmlFor="inv2" className="text-sm cursor-pointer select-none">
                 Use current market price
-                {isLoading ? " (loading...)" : currentPrice > 0 ? ` (${Formatter.formatCurrency(currentPrice)}/share)` : ""}
+                {isLoading ? " (loading...)" : currentPrice > 0 ? ` (${Formatter.formatCurrency(currentPrice, currency)}/share)` : ""}
             </Label>
         </div>
     );

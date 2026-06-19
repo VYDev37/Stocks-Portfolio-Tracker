@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	github.com/VYDev37/go-tvscanner-api v0.0.0-20260518084746-b6824a697fb0 // indirect
+	github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect

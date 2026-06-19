@@ -12,7 +12,7 @@ export default function useAddPosition() {
     const [error, setError] = useState<string | null>(null);
     const refreshProfile = useUser((state) => state.refreshProfile);
 
-    const addPosition = async (position: "buy" | "sell", formData: PortfolioAddReq, position_type: "crypto" | "futures" | "stocks") => {
+    const addPosition = async (position: "buy" | "sell", formData: PortfolioAddReq, position_type: "stocks_us" | "futures" | "stocks") => {
         setLoading(true);
         setError(null);
 

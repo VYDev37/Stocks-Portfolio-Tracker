@@ -17,6 +17,7 @@ export const TransactionInfoSchema = z.object({
     provider: z.string().nullable().optional(),
     account_no: z.string().nullable().optional(),
     created_at: z.coerce.date(),
+    currency: z.string().optional(),
 });
 
 export const UpdateTransactionReqSchema = z.object({
@@ -28,7 +29,7 @@ export const UpdateTransactionReqSchema = z.object({
 
 export const TransactionQuerySchema = z.object({
     searchTerm: z.string().optional(),
-    filterType: z.enum(["all", "stocks", "crypto", "cashflow"]),
+    filterType: z.enum(["all", "stocks", "stocks_us", "cashflow"]),
     filterProvider: z.string(),
     sortDirection: z.enum(["asc", "desc"]),
     currentPage: z.number().int().positive().default(1),
@@ -44,5 +45,7 @@ export type TransactionQuery = z.infer<typeof TransactionQuerySchema>;
 export interface AvailableAccount {
     provider_name: string;
     account_no: string;
+    currency?: string;
     amount?: number;
+    is_new?: boolean;
 }

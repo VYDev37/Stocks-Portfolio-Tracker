@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 
 interface AddAccountModalProps {
     onClose: () => void;
-    onAdd: (provider: string, accountNo: string) => void;
+    onAdd: (provider: string, accountNo: string, currency: string, amount: number) => void;
 }
 
 export default function AddAccountModal({ onClose, onAdd }: AddAccountModalProps) {
     const [provider, setProvider] = useState("");
     const [accountNo, setAccountNo] = useState("");
+    const [amount, setAmount] = useState(0);
     const [customProvider, setCustomProvider] = useState("");
+    const [currency, setCurrency] = useState("IDR");
 
     const handleAdd = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -20,7 +22,7 @@ export default function AddAccountModal({ onClose, onAdd }: AddAccountModalProps
             alert("Please select a provider and enter an account number.");
             return;
         }
-        onAdd(selectedProvider, accountNo);
+        onAdd(selectedProvider, accountNo, currency, amount);
     };
 
     return (
@@ -40,8 +42,7 @@ export default function AddAccountModal({ onClose, onAdd }: AddAccountModalProps
                             id="new_provider"
                             value={provider}
                             onChange={(e) => setProvider(e.target.value)}
-                            className="flex w-full rounded-md border border-white/10 bg-slate-900 px-3 py-2.5 text-xs font-bold text-white shadow-sm mt-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
+                            className="flex w-full rounded-md border border-white/10 bg-slate-900 px-3 py-2.5 text-xs font-bold text-white shadow-sm mt-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
                             <option value="" disabled>Select Bank / Wallet</option>
                             <option value="BCA">BCA</option>
                             <option value="SeaBank">SeaBank</option>
@@ -54,6 +55,21 @@ export default function AddAccountModal({ onClose, onAdd }: AddAccountModalProps
                             <option value="OVO">OVO</option>
                             <option value="ShopeePay">ShopeePay</option>
                             <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <Label htmlFor="new_currency" className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                            Base Currency
+                        </Label>
+                        <select
+                            id="new_currency"
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            className="flex w-full rounded-md border border-white/10 bg-slate-900 px-3 py-2.5 text-xs font-bold text-white shadow-sm mt-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                            <option value="IDR">IDR (Indonesian Rupiah)</option>
+                            <option value="USD">USD (US Dollar)</option>
                         </select>
                     </div>
 
@@ -86,22 +102,24 @@ export default function AddAccountModal({ onClose, onAdd }: AddAccountModalProps
                             className="bg-transparent border-none text-xs h-11 focus-visible:ring-0 focus-visible:ring-offset-0 font-bold mt-1"
                         />
                     </div>
+
+                    <div>
+                        <Label htmlFor="new_amount_no" className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-1 block">
+                            Initial Amount
+                        </Label>
+                        <Input id="new_amount_no" type="number" placeholder="Enter initial amount"
+                            value={amount} onChange={(e) => setAmount(+e.target.value)}
+                            className="bg-transparent border-none text-xs h-11 focus-visible:ring-0 focus-visible:ring-offset-0 font-bold mt-1" />
+                    </div>
                 </div>
 
                 <div className="flex gap-3">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={onClose}
-                        className="flex-1 border-white/10 bg-transparent text-slate-300 hover:bg-white/5 font-bold h-11 text-xs"
-                    >
+                    <Button type="button" variant="outline" onClick={onClose}
+                        className="flex-1 border-white/10 bg-transparent text-slate-300 hover:bg-white/5 font-bold h-11 text-xs">
                         Cancel
                     </Button>
-                    <Button
-                        type="button"
-                        onClick={handleAdd}
-                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold h-11 text-xs"
-                    >
+                    <Button type="button" onClick={handleAdd}
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold h-11 text-xs">
                         Add Account
                     </Button>
                 </div>

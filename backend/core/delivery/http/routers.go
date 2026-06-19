@@ -126,11 +126,13 @@ func InitRoutes(uService services.UserService, pService services.PositionService
 	assetService := handlers.NewAssetHandler(aService)
 
 	assetApi.Get("/get-items", assetService.HandleGetAssets)
+	assetApi.Get("/get-items-us", assetService.HandleGetUSAssets)
 	assetApi.Get("/get-item/:ticker", assetService.HandleGetAsset)
 	assetApi.Get("/get-chart/:ticker", assetService.HandleGetAssetChart)
 
 	workerGroup := app.Group("/worker")
-	workerGroup.Get("/update-prices", assetService.HandleUpdateStock)
+	workerGroup.Get("/update-prices", assetService.HandleUpdateStock)     // IDX (backward-compat)
+	workerGroup.Get("/update-prices-us", assetService.HandleUpdateUSStock) // US (new)
 
 	return app
 }

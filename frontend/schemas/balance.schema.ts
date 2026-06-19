@@ -16,7 +16,8 @@ export const UserBalanceReqSchema = z.object({
     reverse: z.boolean().default(false).optional(),
     date: z.coerce.date().default(() => new Date()),
     provider: z.string().min(1, "Provider is required."),
-    account_no: z.string().min(1, "Account number is required.")
+    account_no: z.string().min(1, "Account number is required."),
+    currency: z.string().optional()
 });
 
 export const PortfolioAddReqSchema = z.object({
@@ -37,12 +38,14 @@ export const PortfolioItemSchema = z.object({
     pnl_percentage: z.number(),
     updated_at: z.coerce.date(),
     provider: z.string().optional().default(""),
-    account_no: z.string().optional().default("")
+    account_no: z.string().optional().default(""),
+    currency: z.string().optional().default("IDR")
 });
 
 export const CreateAccountReqSchema = z.object({
     provider: z.string().min(1, "Bank / Wallet name is required."),
     account_no: z.string().min(4, "Account number must be at least 4 characters."),
+    currency: z.string().default("IDR")
 });
 
 export type BalanceInfo = z.infer<typeof BalanceInfoSchema>;

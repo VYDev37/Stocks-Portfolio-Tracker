@@ -5,19 +5,46 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Formatter } from "@/lib";
 import { AssetInfo } from "@/schemas/asset.schema";
 import { useRouter } from "next/navigation";
+import { MarketType } from "@/hooks/asset/useAssets";
 
 interface HeaderSummaryProps {
     detailData: AssetInfo | null;
     high24h: number;
+    chartLastPrice?: number;
     detailLoading: boolean;
     selectedTicker: string;
+    market?: MarketType;
 }
 
-export default function HeaderSummary({ detailData, high24h, detailLoading, selectedTicker }: HeaderSummaryProps) {
+export default function HeaderSummary({ detailData, high24h, chartLastPrice, detailLoading, selectedTicker, market = "IDX" }: HeaderSummaryProps) {
+    // chartLastPrice (from chart endpoint) takes priority over detailData.price
+    // because chart data refreshes in sync with the candle movement
+    const displayPrice = chartLastPrice || detailData?.price;
     const router = useRouter();
+
+    // Format harga sesuai market: US = desimal USD, IDX = integer IDR
+    const formatPrice = (price?: number) => {
+        if (price === undefined || price === null) return "---";
+        if (market === "US") {
+            return `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+        return Formatter.formatNumber(price);
+    };
+
+    // Format perubahan harga dalam nominal
+    const formatPriceChange = (change?: number, basePrice?: number) => {
+        if (!change || !basePrice) return "---";
+        const delta = ((change / 100) * basePrice);
+        const sign = delta > 0 ? "+" : "-";
+        if (market === "US") {
+            return `${sign}$${Math.abs(delta).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+        return `${sign}${Formatter.formatNumber(Math.abs(delta), true)}`;
+    };
+
     const handleRedirect = (ticker: string, mode: "sell" | "buy") => {
-        router.push(`/admin/stocks/?action=${mode === "buy" ? "add" : mode}&ticker=${ticker}`);
-    }
+        router.push(`/admin/stocks/?action=${mode === "buy" ? "add" : mode}&ticker=${ticker}`, { scroll: false });
+    };
 
     return (
         <Card className="border-white/5 bg-zinc-950/50 shadow-2xl relative overflow-hidden shrink-0">
@@ -50,7 +77,7 @@ export default function HeaderSummary({ detailData, high24h, detailLoading, sele
                                 <span className="text-[10px] text-zinc-500 font-bold mb-1 hidden lg:block tracking-wider">DAY_CHANGE</span>
                                 <div className="flex flex-col items-end lg:flex-row lg:items-baseline lg:gap-2">
                                     <span className="text-xl lg:text-3xl font-mono font-bold">
-                                        {detailData?.change && detailData.change > 0 ? '+' : ''}{Formatter.formatNumber(((detailData?.change || 0) / 100) * (high24h), true)}
+                                        {formatPriceChange(detailData?.change, high24h)}
                                     </span>
                                     <span className="text-xs lg:text-xl font-mono font-bold opacity-80">
                                         ({Formatter.formatPercent(detailData?.change)})
@@ -64,7 +91,7 @@ export default function HeaderSummary({ detailData, high24h, detailLoading, sele
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-zinc-500 font-bold mb-1 hidden lg:block tracking-wider">LAST_PRICE</span>
                                 <span className="text-4xl lg:text-5xl text-white font-mono tracking-tight font-black leading-none">
-                                    {Formatter.formatNumber(detailData?.price)}
+                                    {formatPrice(displayPrice)}
                                 </span>
                             </div>
 

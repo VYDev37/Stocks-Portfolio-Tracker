@@ -8,6 +8,7 @@ type Balance struct {
 	AssetType string  `gorm:"type:varchar(20);not null;default:'stock_balance';uniqueIndex:idx_balance_account" json:"asset_type"`
 	Provider  string  `gorm:"type:varchar(50);uniqueIndex:idx_balance_account" json:"provider"`
 	AccountNo string  `gorm:"type:varchar(50);uniqueIndex:idx_balance_account" json:"account_no"`
+	Currency  string  `gorm:"type:varchar(10);not null;default:'IDR'" json:"currency"`
 }
 
 type BalanceResponse struct {
@@ -24,6 +25,7 @@ type BalanceDetail struct {
 type AccountResponse struct {
 	ProviderName string  `json:"provider_name"`
 	AccountNo    string  `json:"account_no"`
+	Currency     string  `json:"currency"`
 	Amount       float64 `json:"amount"`
 }
 
@@ -38,4 +40,5 @@ type BalanceUpdateReq struct {
 	Date       string  `json:"date"`
 	Provider   string  `json:"provider" validate:"required"`
 	AccountNo  string  `json:"account_no" validate:"required"`
+	Currency   string  `json:"currency"`
 }

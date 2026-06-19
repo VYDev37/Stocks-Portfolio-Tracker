@@ -13,12 +13,25 @@ import (
 	"gorm.io/gorm"
 )
 
+// resolveMarket menentukan nama market (untuk Yahoo Finance) berdasarkan position_type.
+// "stocks"    → IDX (Indonesia, suffix .JK)
+// "stocks_us" → US (NYSE/NASDAQ, tanpa suffix)
+// lainnya     → IDX sebagai default
+func resolveMarket(positionType string) string {
+	switch strings.ToLower(positionType) {
+	case "stocks_us":
+		return "america"
+	default:
+		return "indonesia"
+	}
+}
+
 type PositionService interface {
 	AddPosition(directionType string, pos *domain.Position, fee float64) error
 
 	GetPositions(userID uint64) ([]domain.Position, error)
 	GetPortfolio(userID uint64) (*domain.PortfolioResponse, error)
-	GetTickerCurrentPrice(ticker string) (float64, error)
+	GetTickerCurrentPrice(ticker string, market string) (float64, error)
 	MigratePositions(userID uint64, provider string, accountNo string) error
 }
 
@@ -147,7 +160,8 @@ func (s *positionService) AddPosition(directionType string, pos *domain.Position
 	pos.PositionType = strings.ToLower(pos.PositionType)
 	pos.Ticker = strings.ToUpper(pos.Ticker)
 
-	if _, err := s.provider.GetCurrentPrice(pos.Ticker); err != nil {
+	posMarket := resolveMarket(pos.PositionType)
+	if _, err := s.provider.GetCurrentPrice(pos.Ticker, posMarket); err != nil {
 		return domain.ErrItemNotFound
 	}
 
@@ -167,7 +181,7 @@ func (s *positionService) AddPosition(directionType string, pos *domain.Position
 		}
 
 		if pos.PositionType == "stocks" {
-			pos.TotalQty *= 100 // convert to lot
+			pos.TotalQty *= 100
 		}
 
 		if directionType == "sell" {
@@ -188,18 +202,47 @@ func (s *positionService) GetPortfolio(userID uint64) (*domain.PortfolioResponse
 		return nil, err
 	}
 
-	tickers := []string{}
+	// Kelompokkan ticker berdasarkan market untuk batch fetch yang efisien
+	idxTickers := []string{}
+	usTickers := []string{}
 	for _, p := range positions {
-		tickers = append(tickers, p.Ticker)
+		if resolveMarket(p.PositionType) == "america" {
+			usTickers = append(usTickers, p.Ticker)
+		} else {
+			idxTickers = append(idxTickers, p.Ticker)
+		}
 	}
 
-	prices, _ := s.provider.GetBatchPrices(tickers)
+	prices := make(map[string]float64)
+	if len(idxTickers) > 0 {
+		idxPrices, _ := s.provider.GetBatchPrices(idxTickers, "indonesia")
+		for k, v := range idxPrices {
+			prices["indonesia_"+k] = v
+		}
+	}
+	if len(usTickers) > 0 {
+		usPrices, _ := s.provider.GetBatchPrices(usTickers, "america")
+		for k, v := range usPrices {
+			prices["america_"+k] = v
+		}
+	}
 
-	var totalEquity float64
+	var totalEquityIDR float64
+	var totalEquityUSD float64
 	var portfolio []domain.PortfolioItem
 	for _, p := range positions {
-		currentPrice := prices[p.Ticker] * p.TotalQty // price per lot (only for IDX now)
-		totalEquity += currentPrice
+		market := resolveMarket(p.PositionType)
+		// IDX: price per share × qty (qty sudah dalam satuan lembar setelah ×100)
+		// US:  price per share × qty (qty = jumlah shares)
+		currentPrice := prices[market+"_"+p.Ticker] * p.TotalQty
+
+		currency := "IDR"
+		if resolveMarket(p.PositionType) == "america" {
+			currency = "USD"
+			totalEquityUSD += currentPrice
+		} else {
+			totalEquityIDR += currentPrice
+		}
 
 		unrealizedPnL := (currentPrice - p.InvestedTotal)
 		pnlPercentage := 0.0
@@ -217,17 +260,22 @@ func (s *positionService) GetPortfolio(userID uint64) (*domain.PortfolioResponse
 			UpdatedAt:          p.UpdatedAt,
 			Provider:           p.Provider,
 			AccountNo:          p.AccountNo,
+			Currency:           currency,
 		})
 	}
 
 	return &domain.PortfolioResponse{
-		Items:       portfolio,
-		TotalEquity: totalEquity,
+		Items:          portfolio,
+		TotalEquityIDR: totalEquityIDR,
+		TotalEquityUSD: totalEquityUSD,
 	}, nil
 }
 
-func (s *positionService) GetTickerCurrentPrice(ticker string) (float64, error) {
-	return s.provider.GetCurrentPrice(ticker)
+func (s *positionService) GetTickerCurrentPrice(ticker string, market string) (float64, error) {
+	if market == "US" {
+		return s.provider.GetCurrentPrice(ticker, "america")
+	}
+	return s.provider.GetCurrentPrice(ticker, "indonesia")
 }
 
 func (s *positionService) MigratePositions(userID uint64, provider string, accountNo string) error {

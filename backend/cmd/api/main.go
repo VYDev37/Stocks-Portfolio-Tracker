@@ -23,15 +23,28 @@ func main() {
 		log.Println("No .env file found, relying on environment variables")
 	}
 
-	holidays := market.LoadHolidays("holidays.json")
+	holidays := market.LoadAllHolidays("holidays.json", "holidays_us.json")
 	now := time.Now()
 
-	worker.UpdateStock(holidays, now, true)
+	// Init IDX stock data saat startup
+	worker.UpdateIDXStock(holidays.IDX, now, true)
+	// Init US stock data saat startup
+	worker.UpdateUSStock(holidays.US, now, true)
+
 	if os.Getenv("PRODUCTION_ENVIRONMENT") != "vercel" {
+		// Background worker: update IDX setiap 5 menit
 		go func() {
 			ticker := time.NewTicker(5 * time.Minute)
 			for range ticker.C {
-				worker.UpdateStock(holidays, now, false)
+				worker.UpdateIDXStock(holidays.IDX, time.Now(), false)
+			}
+		}()
+
+		// Background worker: update US setiap 5 menit
+		go func() {
+			ticker := time.NewTicker(5 * time.Minute)
+			for range ticker.C {
+				worker.UpdateUSStock(holidays.US, time.Now(), false)
 			}
 		}()
 	}

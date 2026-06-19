@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useUser, useTransaction } from "@/stores";
-import { axios, Formatter } from "@/lib";
+import { useState } from "react";
+import { useTrackerMigration } from "@/hooks";
+import { Formatter } from "@/lib";
 import { ArrowRightLeft, ShieldAlert, Sparkles, RefreshCw, Plus, Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,26 +10,12 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import AddAccountModal from "../profile/AddAccountModal";
 
-interface AccountProp {
-    provider_name: string;
-    account_no: string;
-    is_new: boolean;
-}
-
 interface TrackerMigrationModalProps {
     isOpen?: boolean;
     onOpenChange?: (open: boolean) => void;
 }
 
 export default function TrackerMigrationModal({ isOpen: controlledIsOpen, onOpenChange: controlledOnOpenChange }: TrackerMigrationModalProps) {
-    const user = useUser((state) => state.user);
-    const refreshProfile = useUser((state) => state.refreshProfile);
-
-    const availableAccounts = useTransaction((state) => state.availableAccounts);
-    const fetchAccounts = useTransaction((state) => state.fetchAccounts);
-    const transactions = useTransaction((state) => state.transactions);
-    const refetchTransactions = useTransaction((state) => state.refetch);
-
     const [localIsOpen, setLocalIsOpen] = useState(false);
     const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : localIsOpen;
 
@@ -41,108 +27,34 @@ export default function TrackerMigrationModal({ isOpen: controlledIsOpen, onOpen
         }
     };
 
-    const [selectedProvider, setSelectedProvider] = useState("");
-    const [selectedAccountNo, setSelectedAccountNo] = useState("");
-    const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-    const [localNewAccounts, setLocalNewAccounts] = useState<AccountProp[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const {
+        user,
+        availableAccounts,
+        selectedProvider,
+        setSelectedProvider,
+        selectedAccountNo,
+        setSelectedAccountNo,
+        showAddAccountModal,
+        setShowAddAccountModal,
+        loading,
+        error,
+        selectedIds,
+        isConfirmed,
+        setIsConfirmed,
+        legacyCashTransactions,
+        accountsToDisplay,
+        isAllSelected,
+        toggleSelectAll,
+        toggleSelectTransaction,
+        handleMigrate,
+        onAddAccount
+    } = useTrackerMigration({
+        isOpen,
+        setIsOpen
+    });
 
-    // Track chosen transaction IDs
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const [isConfirmed, setIsConfirmed] = useState(false);
-
-    // Find all legacy cash transactions (income/expense with blank provider)
-    const legacyCashTransactions = useMemo(() => {
-        return transactions.filter(
-            (t) => (t.transaction_type === "income" || t.transaction_type === "expense") && (!t.provider || t.provider === "")
-        );
-    }, [transactions]);
-
-    useEffect(() => {
-        if (isOpen) {
-            fetchAccounts("cash_balance");
-        }
-    }, [isOpen, fetchAccounts]);
-
-    useEffect(() => {
-        if (legacyCashTransactions.length > 0) {
-            setSelectedIds(legacyCashTransactions.map((t) => t.id));
-        }
-    }, [legacyCashTransactions]);
-
-    if (!isOpen || !user) return null;
-
-    const accountsToDisplay = [
-        ...(availableAccounts || []).map(acc => ({
-            provider_name: acc.provider_name,
-            account_no: acc.account_no,
-            is_new: false
-        })),
-        ...localNewAccounts
-    ];
-
-    const isAllSelected = selectedIds.length === legacyCashTransactions.length;
-
-    const toggleSelectAll = () => {
-        if (isAllSelected) {
-            setSelectedIds([]);
-        } else {
-            setSelectedIds(legacyCashTransactions.map((t) => t.id));
-        }
-    };
-
-    const toggleSelectTransaction = (id: number) => {
-        if (selectedIds.includes(id)) {
-            setSelectedIds(prev => prev.filter(x => x !== id));
-        } else {
-            setSelectedIds(prev => [...prev, id]);
-        }
-    };
-
-    const handleMigrate = async () => {
-        if (!selectedProvider || !selectedAccountNo) {
-            setError("Please select or create a bank / wallet account for migration.");
-            return;
-        }
-
-        if (selectedIds.length === 0) {
-            setError("Please select at least one transaction to migrate.");
-            return;
-        }
-
-        if (!isConfirmed) {
-            setError("Please check the confirmation checkbox to agree to move the transactions.");
-            return;
-        }
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            await axios.post("/transactions/migrate", {
-                provider: selectedProvider,
-                account_no: selectedAccountNo,
-                transaction_ids: selectedIds
-            });
-
-            await refreshProfile(true);
-            await refetchTransactions(true);
-            setIsOpen(false);
-        } catch (err: any) {
-            setError(err?.response?.data?.message || err?.message || "Migration failed. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const onAddAccount = (selectedProv: string, accNo: string) => {
-        const newAccount: AccountProp = { provider_name: selectedProv, account_no: accNo, is_new: true };
-        setLocalNewAccounts(prev => [...prev, newAccount]);
-        setSelectedProvider(selectedProv);
-        setSelectedAccountNo(accNo);
-        setShowAddAccountModal(false);
-    }
+    if (!isOpen || !user)
+        return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

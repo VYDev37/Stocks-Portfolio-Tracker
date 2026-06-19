@@ -28,7 +28,8 @@ func (h *PositionHandler) HandleGetTickerMarketPrice(c fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"message": "Ticker is required."})
 	}
 
-	price, err := h.service.GetTickerCurrentPrice(ticker)
+	market := strings.ToUpper(c.Query("market", "IDX"))
+	price, err := h.service.GetTickerCurrentPrice(ticker, market)
 	if err != nil {
 		return format.ErrorResponse(c, err)
 	}

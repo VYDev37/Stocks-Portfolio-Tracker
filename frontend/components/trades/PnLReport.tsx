@@ -58,14 +58,14 @@ export default function PnLReport({ transaction, stock, userNickname, mode, card
                     "text-6xl font-black tracking-tighter leading-none my-2",
                     isProfit ? "text-emerald-400" : "text-red-400"
                 )}>
-                    {isProfit ? "+" : ""}{mode !== "pnl" ? `${roiPercentage.toFixed(2)}%` : `${Formatter.formatCurrency(pnl)}`}
+                    {isProfit ? "+" : ""}{mode !== "pnl" ? `${roiPercentage.toFixed(2)}%` : `${Formatter.formatCurrency(pnl, stock?.currency)}`}
                 </div>
 
                 {(mode === "pnl_roi") && (<div className={cn(
                     "px-6 py-2 rounded-full font-black text-xl flex items-center gap-2",
                     isProfit ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"
                 )}>
-                    {Formatter.formatCurrency(pnl)}
+                    {Formatter.formatCurrency(pnl, stock?.currency)}
                 </div>)}
             </div>
 
@@ -94,7 +94,7 @@ export default function PnLReport({ transaction, stock, userNickname, mode, card
                                 Fee
                             </p>
                             <p className="text-sm font-bold text-zinc-400">
-                                Rp{Formatter.formatNumber(transaction?.transaction_fee || 0)}
+                                {Formatter.formatCurrency(transaction?.transaction_fee || 0, transaction?.currency)}
                             </p>
                         </>
                     )}

@@ -103,7 +103,7 @@ func (s *userService) GetProfile(userID uint64) (*domain.UserProfileResponse, er
 		return nil, err
 	}
 
-	totalEquity := balance.StockBalance + portfolio.TotalEquity
+	totalEquity := balance.StockBalance + portfolio.TotalEquityIDR
 
 	return &domain.UserProfileResponse{
 		Name:     user.Name,

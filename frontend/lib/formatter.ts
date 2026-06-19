@@ -6,14 +6,14 @@ const Formatter = {
         return (num === 0 && !keepDisplaying) ? "-" : num.toLocaleString("id-ID", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
     },
 
-    formatCurrency(num: number | any): string {
+    formatCurrency(num: number | any, currency: string = "IDR"): string {
         if (typeof num !== "number")
             return "Rp0";
 
         if (num === 0)
             return "-";
 
-        return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(num).replace(/\s/g, "");
+        return new Intl.NumberFormat("id-ID", { style: "currency", currency, maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(num).replace(/\s/g, "");
     },
     formatDate(date: Date): string {
         const d = typeof date === "string" ? new Date(date) : date;

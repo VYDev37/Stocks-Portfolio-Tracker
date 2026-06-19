@@ -143,7 +143,7 @@ export const AssetInfoSchema = z.object({
     cci20: RawNumSchema, // Commodity Channel Index (20)
     stoch_k: RawNumSchema, // Stochastic %K
     stoch_d: RawNumSchema, // Stochastic %D
-    tech_rating_1d: RawNumSchema, // AI Tech Rating 1D (-1 Strong Sell to 1 Strong Buy)
+    tech_rating_1d: z.string(), // AI Tech Rating 1D (-1 Strong Sell to 1 Strong Buy)
 });
 
 export const ChartFormSchema = z.enum(["line", "candle"]);

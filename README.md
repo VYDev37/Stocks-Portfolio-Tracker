@@ -48,7 +48,7 @@ Trade-Performance-Tracker/
 │   │   └── api/                # Fiber API runtime
 │   │       └── main.go         # Bootstraps configuration, DB, handlers, and routers
 │   ├── core/                   # Domain-Driven Design Core
-│   │   ├── config/             # DB connectivity, pooling & environment configs
+│   │   ├── config/             # DB connectivity & pooling configs (database.go)
 │   │   ├── delivery/           # Request controllers & endpoint routing
 │   │   │   ├── handlers/       # Endpoint handlers (user, positions, notes, assets, etc.)
 │   │   │   └── http/           # Fiber router configuration (routers.go)
@@ -61,13 +61,13 @@ Trade-Performance-Tracker/
 │   │   └── worker/             # Background daemons (update_stock.go price synchronizer)
 │   ├── pkg/                    # Reusable framework utilities
 │   │   ├── middleware/         # Security & JWT router guards
-│   │   └── utils/              # Crypt encoders, number formatters, error wrappers
+│   │   └── utils/              # Helper utilities (auth, excel, format, hash, market)
 │   ├── .dockerignore           # Excluded files for containerization
 │   ├── .env.example            # Backend environment blueprint
 │   ├── .gitignore              # Git patterns to ignore in backend
 │   ├── Dockerfile              # Go lightweight production container
 │   ├── go.mod                  # Go engine dependencies
-│   ├── go.sum                  # Dependecies checksum verification
+│   ├── go.sum                  # Dependencies checksum verification
 │   └── README.md               # Backend technical guide
 │
 ├── frontend/                   # Next.js Application
@@ -84,6 +84,7 @@ Trade-Performance-Tracker/
 │   │   │   ├── journals/       # Notebook space & formatted journal cards
 │   │   │   ├── profile/        # Accounts management, asset splits & passwords
 │   │   │   ├── stocks/         # Holdings trackers with dynamic metadata routing
+│   │   │   ├── tracker/        # Budgeting columns & mobile-friendly lists
 │   │   │   └── transactions/   # Filterable logs, trade audits & fee records
 │   │   ├── favicon.ico         # App Favicon
 │   │   ├── globals.css         # Typography, tailwind layers & scroll themes
@@ -127,6 +128,7 @@ Trade-Performance-Tracker/
 │   │   ├── useTransactionStore.ts # Synced cache for user order histories
 │   │   └── useUserStore.ts     # Active profile context and authentication session store
 │   ├── app.config.ts           # App constant configuration options
+│   ├── components.json         # Shadcn/ui configuration settings
 │   ├── public/                 # Static graphical assets & icons
 │   ├── tsconfig.json           # Compiler rules for TypeScript
 │   ├── next.config.ts          # Core Next.js configuration rules
@@ -136,10 +138,15 @@ Trade-Performance-Tracker/
 │   ├── eslint.config.mjs       # Code style enforcement rules
 │   ├── postcss.config.mjs      # CSS compile specifications
 │   ├── proxy.ts                # Dev server connection proxies
+│   ├── .dockerignore           # Excluded files for frontend containerization
+│   ├── .env.example            # Frontend environment blueprint
+│   ├── .gitignore              # Git patterns to ignore in frontend
+│   ├── Dockerfile              # Next.js production container config
 │   └── README.md               # Frontend user guide
 │
 ├── .gitignore                  # Global project files to ignore
-├── backup-trade-tracker.sql    # Relational database seed snapshot
+├── AUDIT_REPORT.md             # Security and codebase audit documentation
+├── backup_trade_tracker.sql    # Relational database seed snapshot
 ├── CHANGELOG.md                # Historic record of releases & milestones
 ├── DEPLOYMENT.md               # Production cloud deployment guide
 ├── docker-compose.yml          # Container orchestration blueprints

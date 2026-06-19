@@ -127,7 +127,7 @@ export default function PortfolioPieChart({ positions, isCapital }: PortfolioPie
             {/* Custom Legend */}
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-4 w-full z-10">
                 {chartData.map((item, index) => (
-                    <div key={item.ticker} className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-default">
+                    <div key={`${item.ticker}-${index}`} className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-default">
                         <div
                             className="w-2.5 h-2.5 rounded-full shadow-sm"
                             style={{ backgroundColor: COLORS[index % COLORS.length] }}

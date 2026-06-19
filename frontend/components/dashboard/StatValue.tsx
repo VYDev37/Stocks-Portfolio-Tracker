@@ -17,14 +17,29 @@ interface UserStatValueProps {
     isCurrency?: boolean;
     useDynamicColor?: boolean;
     selectedBroker?: string;
+    globalCurrency?: "IDR" | "USD";
+    usdToIdrRate?: number;
 }
 
-export default function UserStatValue({ field, subfield, isCurrency, useDynamicColor, selectedBroker = "all" }: UserStatValueProps) {
+export default function UserStatValue({ field, subfield, isCurrency, useDynamicColor, selectedBroker = "all", globalCurrency = "IDR", usdToIdrRate = 15000 }: UserStatValueProps) {
     const user = useUser((state) => state.user);
     const isLoadingUser = useUser((state) => state.isLoading);
     const transactions = useTransaction((state) => state.transactions);
     const loading = useTransaction((state) => state.loading);
     const availableAccounts = useTransaction((state) => state.availableAccounts);
+
+    const convertValue = (val: number, fromCurrency: string = "IDR", toCurrency: string = "IDR") => {
+        if (fromCurrency === toCurrency) return val;
+        if (fromCurrency === "USD" && toCurrency === "IDR") return val * usdToIdrRate;
+        if (fromCurrency === "IDR" && toCurrency === "USD") return val / usdToIdrRate;
+        return val;
+    };
+
+    const getAccountCurrency = (provider?: string | null, account_no?: string | null) => {
+        if (!provider || !account_no) return "IDR";
+        const acc = availableAccounts.find(a => a.provider_name === provider && a.account_no === account_no);
+        return acc?.currency || "IDR";
+    };
 
     const filteredTransactions = useMemo(() => {
         let list = transactions;
@@ -38,16 +53,23 @@ export default function UserStatValue({ field, subfield, isCurrency, useDynamicC
     const stats = useMemo(() => {
         const transaction = filteredTransactions.filter(pos => pos.transaction_type === "sell");
 
-        const gainPositions = transaction
-            .filter(pos => pos.realized_pnl >= 0)
-            .toSorted((a, b) => b.realized_pnl - a.realized_pnl);
+        // Convert PnL to target currency before sorting/summing
+        const mappedTransactions = transaction.map(t => {
+            const tCurr = getAccountCurrency(t.provider, t.account_no);
+            const convertedPnl = convertValue(t.realized_pnl || 0, tCurr, globalCurrency);
+            return { ...t, convertedPnl };
+        });
 
-        const lossPositions = transaction
-            .filter(pos => pos.realized_pnl < 0)
-            .toSorted((a, b) => a.realized_pnl - b.realized_pnl);
+        const gainPositions = mappedTransactions
+            .filter(pos => pos.convertedPnl >= 0)
+            .toSorted((a, b) => b.convertedPnl - a.convertedPnl);
 
-        const totalGain = gainPositions.reduce((acc, curr) => acc + (curr.realized_pnl || 0), 0);
-        const totalLoss = lossPositions.reduce((acc, curr) => acc + (curr.realized_pnl || 0), 0);
+        const lossPositions = mappedTransactions
+            .filter(pos => pos.convertedPnl < 0)
+            .toSorted((a, b) => a.convertedPnl - b.convertedPnl);
+
+        const totalGain = gainPositions.reduce((acc, curr) => acc + curr.convertedPnl, 0);
+        const totalLoss = lossPositions.reduce((acc, curr) => acc + curr.convertedPnl, 0);
 
         return {
             gainPositions,
@@ -56,7 +78,7 @@ export default function UserStatValue({ field, subfield, isCurrency, useDynamicC
             totalLoss,
             totalCount: transaction.length
         };
-    }, [filteredTransactions]);
+    }, [filteredTransactions, availableAccounts, globalCurrency, usdToIdrRate]);
 
     let value: number | string;
     if (isLoadingUser || loading)
@@ -88,17 +110,20 @@ export default function UserStatValue({ field, subfield, isCurrency, useDynamicC
             value = stats.totalCount > 0 ? (stats.gainPositions.length / stats.totalCount) * 100 : 0;
             break;
         case "positions_count":
-            value = stats.totalCount;
+            value = user?.positions.items.length || 0;
             break;
         case "balance":
             if (selectedBroker && selectedBroker !== "all") {
                 const target = availableAccounts?.find(
                     acc => `${acc.provider_name}-${acc.account_no}` === selectedBroker
                 );
-                value = target ? (target.amount || 0) : 0;
+                value = target ? convertValue(target.amount || 0, target.currency, globalCurrency) : 0;
             } else {
-                const balanceData = user?.balance;
-                value = subfield ? (balanceData?.[subfield] || 0) : (user?.balance.stock_balance || 0);
+                let total = 0;
+                availableAccounts.forEach(acc => {
+                    total += convertValue(acc.amount || 0, acc.currency, globalCurrency);
+                });
+                value = total;
             }
             break;
         case "total_equity":
@@ -106,9 +131,16 @@ export default function UserStatValue({ field, subfield, isCurrency, useDynamicC
                 const items = (user?.positions.items || []).filter(
                     p => `${p.provider}-${p.account_no}` === selectedBroker
                 );
-                value = items.reduce((acc, curr) => acc + (curr.current_price || 0), 0);
+                let total = 0;
+                items.forEach(item => {
+                    const iCurr = getAccountCurrency(item.provider, item.account_no);
+                    total += convertValue(item.current_price || 0, iCurr, globalCurrency);
+                });
+                value = total;
             } else {
-                value = user?.positions.total_equity || 0;
+                const eqIDR = user?.positions.total_equity_idr || 0;
+                const eqUSD = user?.positions.total_equity_usd || 0;
+                value = convertValue(eqIDR, "IDR", globalCurrency) + convertValue(eqUSD, "USD", globalCurrency);
             }
             break;
         default:
@@ -128,8 +160,8 @@ export default function UserStatValue({ field, subfield, isCurrency, useDynamicC
         <span className={`font-bold ${colorClass}`}>
             {sign}
             {typeof value === "string" ? value
-                : field === "temp_win_rate" ? `${Formatter.formatNumber(value)}%`
-                    : isCurrency ? Formatter.formatCurrency(value) : Formatter.formatNumber(value)}
+                : field === "temp_win_rate" ? `${Formatter.formatNumber(value, true)}%`
+                    : isCurrency ? (globalCurrency === "USD" ? `$${Formatter.formatNumber(value, true)}` : Formatter.formatCurrency(value)) : Formatter.formatNumber(value, true)}
         </span>
     );
 }

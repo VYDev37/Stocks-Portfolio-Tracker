@@ -51,14 +51,14 @@ export default function PortfolioOverviewCard({ portfolio }: PortfolioOverviewCa
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {topPerformers.map((item) => {
+                        {topPerformers.map((item, index) => {
                             const isPositive = item.unrealized_pnl >= 0;
                             const colorClass = isPositive ? "text-emerald-500" : "text-red-500";
                             const Icon = isPositive ? TrendingUp : TrendingDown;
                             const sign = isPositive ? "+" : "";
 
                             return (
-                                <div key={item.ticker} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/20 border border-slate-800/30 hover:bg-slate-800/40 transition-colors">
+                                <div key={`${item.ticker}-${index}`} className="flex items-center justify-between p-3 rounded-lg bg-slate-800/20 border border-slate-800/30 hover:bg-slate-800/40 transition-colors">
                                     <div className="flex items-center gap-3">
                                         <div className={`p-2 rounded-md ${isPositive ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
                                             <Icon className={`h-4 w-4 ${colorClass}`} />

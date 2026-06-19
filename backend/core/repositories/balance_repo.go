@@ -137,7 +137,7 @@ func (r *balanceRepo) GetBalanceByType(userID uint64, assetType string, provider
 func (r *balanceRepo) GetProviderAccounts(userID uint64, assetType string) ([]domain.AccountResponse, error) {
 	var accounts []domain.AccountResponse
 	err := r.DB.Model(&domain.Balance{}).
-		Select("provider as provider_name", "account_no", "amount").
+		Select("provider as provider_name", "account_no", "currency", "amount").
 		Where("user_id = ? AND asset_type = ? AND provider != '' AND account_no != ''", userID, assetType).
 		Find(&accounts).Error
 

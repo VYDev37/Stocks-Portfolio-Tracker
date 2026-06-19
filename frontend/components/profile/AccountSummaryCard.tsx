@@ -108,9 +108,20 @@ export default function AccountSummaryCard({ user }: AccountSummaryCardProps) {
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-medium text-slate-400 mb-1 truncate">Total Equity</p>
-                            <p className="text-xl md:text-2xl font-bold text-white tracking-tight truncate">
-                                {Formatter.formatCurrency(user.positions?.total_equity)}
-                            </p>
+                            <div className="text-xl md:text-2xl font-bold text-white tracking-tight truncate">
+                                {user.positions?.total_equity_idr > 0 && user.positions?.total_equity_usd > 0 ? (
+                                    <div className="flex flex-col">
+                                        <span>{Formatter.formatCurrency(user.positions.total_equity_idr, "IDR")}</span>
+                                        <span className="text-xs md:text-sm font-medium text-slate-400">
+                                            {Formatter.formatCurrency(user.positions.total_equity_usd, "USD")}
+                                        </span>
+                                    </div>
+                                ) : user.positions?.total_equity_usd > 0 ? (
+                                    Formatter.formatCurrency(user.positions.total_equity_usd, "USD")
+                                ) : (
+                                    Formatter.formatCurrency(user.positions?.total_equity_idr || 0, "IDR")
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

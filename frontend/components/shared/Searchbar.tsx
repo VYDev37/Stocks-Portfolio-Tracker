@@ -6,10 +6,11 @@ import { SearchIcon } from "lucide-react";
 interface SearchbarProps {
     label: string;
     onSearch: (value: string) => void;
+    initialValue?: string;
 }
 
-export default function Searchbar({ label, onSearch }: SearchbarProps) {
-    const [tempQuery, setTempQuery] = useState("");
+export default function Searchbar({ label, onSearch, initialValue = "" }: SearchbarProps) {
+    const [tempQuery, setTempQuery] = useState(initialValue);
 
     return (
         <div className="flex border-b border-white/10 bg-zinc-950 p-2 gap-2">

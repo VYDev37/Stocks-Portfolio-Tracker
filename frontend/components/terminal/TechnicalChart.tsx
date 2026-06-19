@@ -92,6 +92,9 @@ export default function TechnicalChart({ chartData, chartLoading, detailData, ti
                 <span className="text-[10px] font-black text-emerald-400 px-3 py-1 bg-emerald-500/10 rounded border border-emerald-500/20 tracking-wider">RSI: {Formatter.formatNumber(detailData?.rsi) || "---"}</span>
                 <span className="text-[10px] font-bold text-zinc-400 px-3 py-1 border border-white/5 rounded tracking-wider">MACD: {Formatter.formatNumber(detailData?.momentum) || "---"}</span>
                 <span className="text-[10px] font-bold text-zinc-400 px-3 py-1 border border-white/5 rounded tracking-wider">VOL: {Formatter.formatLargeNumber(detailData?.volume) || "---"}</span>
+                <span className="text-[10px] font-bold text-zinc-400 px-3 py-1 border border-white/5 rounded tracking-wider">
+                    AI Signal: {detailData?.tech_rating_1d}
+                </span>
             </div>
         </div >
     );

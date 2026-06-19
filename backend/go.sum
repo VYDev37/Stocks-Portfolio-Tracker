@@ -6,6 +6,8 @@ github.com/VYDev37/go-tvscanner-api v0.0.0-20260517105910-c6d9f820f8ea h1:jkDQra
 github.com/VYDev37/go-tvscanner-api v0.0.0-20260517105910-c6d9f820f8ea/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
 github.com/VYDev37/go-tvscanner-api v0.0.0-20260518084746-b6824a697fb0 h1:qT/r2MotjxnvGsgrcsaJQTklMpjvzR+NjmA4Ypl/MEs=
 github.com/VYDev37/go-tvscanner-api v0.0.0-20260518084746-b6824a697fb0/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
+github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290 h1:WZmJZTZvUWHLgXTDgGUGHD8PxJpjysczhpOW8pgXEKQ=
+github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
 github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHcQQP0w=
 github.com/alexedwards/argon2id v1.0.0/go.mod h1:tYKkqIjzXvZdzPvADMWOEZ+l6+BD6CtBXMj5fnJppiw=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=

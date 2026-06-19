@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useDashboard } from "@/hooks";
 import { UserStatValue } from "@/components/dashboard";
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTransaction } from "@/stores";
 
 import Link from "next/link";
 import {
@@ -29,13 +28,14 @@ interface DashboardInfo {
 }
 
 export default function DashboardClient() {
-    const [selectedBroker, setSelectedBroker] = useState<string>("all");
-    const availableAccounts = useTransaction((state) => state.availableAccounts);
-    const fetchAccounts = useTransaction((state) => state.fetchAccounts);
-
-    useEffect(() => {
-        fetchAccounts("stock_balance");
-    }, [fetchAccounts]);
+    const {
+        selectedBroker,
+        setSelectedBroker,
+        globalCurrency,
+        setGlobalCurrency,
+        usdToIdrRate,
+        availableAccounts
+    } = useDashboard();
 
     const colors: Record<string, string> = {
         green: "bg-green-600 shadow-green-900/20",
@@ -86,6 +86,26 @@ export default function DashboardClient() {
                         </Select>
                     </div>
                 )}
+
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Currency:</span>
+                    <div className="flex gap-1 p-1 bg-white/5 rounded-md border border-white/10">
+                        <button
+                            type="button"
+                            onClick={() => setGlobalCurrency("IDR")}
+                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${globalCurrency === "IDR" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+                        >
+                            IDR
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setGlobalCurrency("USD")}
+                            className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${globalCurrency === "USD" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+                        >
+                            USD
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <Card className="flex flex-col w-full mt-5 mb-10 border-white/5 bg-zinc-950/50">
@@ -116,6 +136,8 @@ export default function DashboardClient() {
                                                 isCurrency={info.isCurrency}
                                                 useDynamicColor={info.useDynamicColor}
                                                 selectedBroker={selectedBroker}
+                                                globalCurrency={globalCurrency}
+                                                usdToIdrRate={usdToIdrRate}
                                             />
                                         </div>
                                     </div>

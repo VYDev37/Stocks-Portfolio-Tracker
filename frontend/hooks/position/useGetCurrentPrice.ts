@@ -6,7 +6,7 @@ import { axios } from "@/lib";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data.price);
 
-export default function useGetCurrentPrice(ticker: string) {
+export default function useGetCurrentPrice(ticker: string, market: "IDX" | "US" = "IDX") {
     const [debouncedTicker, setDebouncedTicker] = useState(ticker);
 
     useEffect(() => {
@@ -17,9 +17,9 @@ export default function useGetCurrentPrice(ticker: string) {
         return () => clearTimeout(handler);
     }, [ticker]);
 
-    const shouldFetch = Boolean(debouncedTicker && debouncedTicker.length >= 4);
+    const shouldFetch = Boolean(debouncedTicker && debouncedTicker.length >= 1);
     const { data: price, error, isLoading, mutate } = useSWR(
-        shouldFetch ? `/position/get-price/${debouncedTicker.toUpperCase()}` : null,
+        shouldFetch ? `/position/get-price/${debouncedTicker.toUpperCase()}?market=${market}` : null,
         fetcher,
         {
             refreshInterval: 15000,

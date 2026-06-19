@@ -37,7 +37,7 @@ export default function OrderBook({ bids, asks, loading, ticker, currentPrice }:
     return (
         <Card className="bg-zinc-900/40 border-white/5 shadow-2xl h-full flex flex-col">
             <CardHeader className="py-3 bg-white/5 border-b border-white/5">
-                <CardTitle className="text-[10px] font-black tracking-widest text-zinc-400">MARKET_DEPTH</CardTitle>
+                <CardTitle className="text-[10px] font-black tracking-widest text-zinc-400">MARKET_DEPTH (MOCK)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 flex gap-4 flex-1">
                 {loading ? (

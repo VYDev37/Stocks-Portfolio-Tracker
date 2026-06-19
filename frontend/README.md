@@ -30,6 +30,7 @@ The `app/` folder is strictly reserved for route layout, pages, and entry points
 - **`app/admin/`**: Secured dashboards and features layouts.
   - `dashboard/`: Unified stats and portfolio metrics.
   - `stocks/`: Holdings tracker with dynamic metadata routing.
+  - `tracker/`: Budgeting ledger cards, cashflow adjustments, and mobile lists.
   - `transactions/`: Complete transaction logs and audit filters.
   - `profile/`: Account setups, asset allocations, and balance sheets.
   - `journals/`: Formatted trading journals list.
@@ -41,7 +42,7 @@ The `app/` folder is strictly reserved for route layout, pages, and entry points
 ### 📂 Codebase & Shared Modules
 Non-route shared folders are kept in the root folder to prevent route clutter and maintain clean imports:
 - **`components/`**: Decomposed application UI components (scoped by business domain):
-  - `calculator/`, `dashboard/`, `journal/`, `profile/`, `stock/`, `terminal/`, `tracker/`, `trades/`, `transaction/`, `user/`
+  - `calculator/`, `dashboard/`, `journal/`, `profile/`, `shared/`, `stock/`, `terminal/`, `tracker/`, `trades/`, `transaction/`, `user/`
   - `ui/`: Radix-based UI primitive components (buttons, dialogs, inputs, sheets).
   - *Direct elements*: `AdminSidebar.tsx` (primary sidebar shell) & `ThemeProvider.tsx` (theme switcher).
 - **`hooks/`**: Custom React hooks abstracting API queries, states, and client interactions:
@@ -51,18 +52,30 @@ Non-route shared folders are kept in the root folder to prevent route clutter an
   - `axios.ts`: Pre-configured Axios instance.
   - `formatter.ts`: Currency conversion, percentage ratios, and date/time formatters.
   - `utils.ts`: Standard class-merging helper (`cn`).
+  - `index.ts`: Utility modules exporter.
 - **`schemas/`**: Strict runtime schema validators using Zod:
   - `asset.schema.ts`, `auth.schema.ts`, `balance.schema.ts`, `journal.schema.ts`, `transaction.schema.ts`
 - **`stores/`**: High-performance Zustand store handlers:
   - `useUserStore.ts`: User profile configuration and account state.
   - `useTransactionStore.ts`: Synced log of user transactions.
+  - `index.ts`: Stores exporter.
 - **`app.config.ts`**: Global configuration namespace (`AppConfig`) holding site metadata constants.
 
 ### 📦 Root UI Helpers
-
 - **`components/ui/`**: Core shadcn/ui primitive components (buttons, input, sheet, select, dropdowns, etc.).
 - **`hooks/use-mobile.ts`**: Helper hook resolving device viewport size for responsive layout changes.
 - **`lib/utils.ts`**: Reusable `cn` merger combining Tailwind classes safely.
+
+### ⚙️ Root Configuration & Meta Files
+- **`components.json`**: Shadcn/ui CLI configuration settings.
+- **`eslint.config.mjs`**: ESLint linting rules.
+- **`next.config.ts`**: Next.js core application settings.
+- **`package.json`**: Package dependencies, scripts, and details.
+- **`pnpm-lock.yaml`** & **`pnpm-workspace.yaml`**: Lockfile and workspace configs for pnpm.
+- **`postcss.config.mjs`**: CSS postcss compiler plugins.
+- **`proxy.ts`**: Development API server proxies.
+- **`tsconfig.json`**: TS compiler parameters.
+- **`Dockerfile`**, **`.dockerignore`**, **`.env.example`**, **`.gitignore`**: Docker container configurations, git ignores, and sample environment variables template.
 
 ---
 

@@ -123,12 +123,17 @@ func (s *balanceService) AdjustBalance(userID uint64, req domain.BalanceUpdateRe
 		}
 
 		if data == nil {
+			currency := req.Currency
+			if currency == "" {
+				currency = "IDR"
+			}
 			err := s.repo.CreateBalance(&domain.Balance{
 				UserID:    userID,
 				Amount:    req.Amount,
 				AssetType: req.AssetType,
 				Provider:  req.Provider,
 				AccountNo: req.AccountNo,
+				Currency:  currency,
 			}, tx)
 
 			if err != nil {

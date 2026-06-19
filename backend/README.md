@@ -9,9 +9,9 @@ The engine follows a strict **Clean Architecture / Domain-Driven Design (DDD)** 
 - **`cmd/`**
   - `api/main.go`: Application entrypoint. Boots system environment settings, database connections, integrations, and launches the Fiber HTTP daemon.
 - **`core/`**
-  - `config/`: Configuration loaders and connection pooling definitions (`database.go`, `env.go`).
+  - `config/`: Database connectivity and pooling configuration (`database.go`). Environment settings are loaded dynamically using the `.env` file via the `godotenv` library inside `main.go`.
   - `delivery/`: Request routers and entry controller handlers.
-    - `handlers/`: Form data controllers parsing queries and handling inputs (`user`, `positions`, `transactions`, `notes`, `assets`, etc.).
+    - `handlers/`: Form data controllers parsing queries and handling inputs (`user_handler.go`, `position_handler.go`, `transaction_handler.go`, `note_handler.go`, `balance_handler.go`, `asset_handler.go`, `report_handler.go`).
     - `http/routers.go`: Router bindings, CORS setups, and endpoint groupings.
   - `domain/`: Business entities, relational models, GORM schema tags, and adapter interfaces.
   - `integrations/`: Third-party services integrations.
@@ -22,7 +22,12 @@ The engine follows a strict **Clean Architecture / Domain-Driven Design (DDD)** 
   - `worker/`: Cron processes and daemon runners (`update_stock.go` market synchronizer).
 - **`pkg/`**
   - `middleware/`: Security and authorization filters (`auth.go` verifying JWT headers).
-  - `utils/`: Common tools (Argon2id password hashes, error wrapping, local currencies formatting).
+  - `utils/`: Domain utility modules categorized by purpose:
+    - `auth/`: JWT authentication and token management.
+    - `excel/`: Excel workbook generation wrappers (powered by `excelize`).
+    - `format/`: Output currency formats, text sanitizers, and standard error wrappers.
+    - `hash/`: Argon2id password encryption utilities.
+    - `market/`: Market calendars, holidays parser, and operating hour details.
 
 ---
 
@@ -77,15 +82,17 @@ Routes are grouped under the `/api` prefix (configurable via `API_GROUP_NAME` en
 | | **`DELETE`** | `/api/notes/remove/:nId` | Remove a journal from database |
 | **Balance** | **`POST`** | `/api/balance/update-balance` | Modify broker or bank ledger card balances |
 | | **`GET`** | `/api/balance/accounts/:type` | Fetch bank or broker account listings |
-| **Reports** | **`GET`** | `/api/report/get` | Generate printable PnL performance summaries |
-| **IDX Market** | **`GET`** | `/api/asset/get-items` | Get filterable/searchable lists of IDX stock assets |
+| **Reports** | **`GET`** | `/api/report/get` | Export Excel profile report containing transactions, positions, and logs |
+| **IDX & US Market** | **`GET`** | `/api/asset/get-items` | Get filterable/searchable lists of IDX stock assets |
+| | **`GET`** | `/api/asset/get-items-us` | Get filterable/searchable lists of US stock assets |
 | | **`GET`** | `/api/asset/get-item/:ticker` | Fetch fundamentals, metrics, and summary card data |
 | | **`GET`** | `/api/asset/get-chart/:ticker` | Get candle charts database history for TradingView lightweight charts |
 
 ### ⚙️ Worker Operations
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **`GET`** | `/worker/update-prices` | Trigger database synchronizations of asset market prices |
+| **`GET`** | `/worker/update-prices` | Trigger database synchronizations of IDX stock market prices |
+| **`GET`** | `/worker/update-prices-us` | Trigger database synchronizations of US stock market prices |
 
 ---
 

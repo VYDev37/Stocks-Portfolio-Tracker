@@ -32,7 +32,7 @@ export default function AdminSidebar() {
     const menus: SidebarMenus[] = [
         { label: "Dashboard", link: "/admin/dashboard", icon: LayoutDashboard },
         { label: "Stocks", link: "/admin/stocks", icon: TrendingUp },
-        { label: "Indonesian Market", link: "/admin/composite", icon: ChartBarIcon },
+        { label: "Stock Terminal", link: "/admin/composite", icon: ChartBarIcon },
         { label: "AI Assistant", link: "/admin/assistant", icon: MessageSquareText },
         { label: "Financial Tracker", link: "/admin/tracker", icon: Wallet2 },
         { label: "My Journals", link: "/admin/journals", icon: NotebookPen },
