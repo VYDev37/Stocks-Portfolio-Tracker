@@ -5,9 +5,9 @@ import (
 	"math"
 	"strings"
 
-	"trade-tracker/core/integrations/providers"
-	"trade-tracker/pkg/utils/excel"
-	"trade-tracker/pkg/utils/format"
+	"stocks-portfolio-tracker/core/integrations/providers"
+	"stocks-portfolio-tracker/pkg/utils/excel"
+	"stocks-portfolio-tracker/pkg/utils/format"
 
 	"github.com/xuri/excelize/v2"
 )

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"trade-tracker/core/domain"
+	"stocks-portfolio-tracker/core/domain"
 )
 
 type YahooChartResponse struct {

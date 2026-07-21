@@ -1,11 +1,3 @@
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260513082740-d9a96ce8d151 h1:7rOYOAZsNNu7xQtOaDPpVYBPXeeVb2ksiMR7EOQQjZA=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260513082740-d9a96ce8d151/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260517100846-47405eed8ad4 h1:ZC2KS9JU3SOYXgbkbHJn3396iC2Q+Qtn2dZGJw1XhKk=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260517100846-47405eed8ad4/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260517105910-c6d9f820f8ea h1:jkDQra5hCFNfJBwyOrsDVnaKXi1QP2FMImy4twiAlw0=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260517105910-c6d9f820f8ea/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260518084746-b6824a697fb0 h1:qT/r2MotjxnvGsgrcsaJQTklMpjvzR+NjmA4Ypl/MEs=
-github.com/VYDev37/go-tvscanner-api v0.0.0-20260518084746-b6824a697fb0/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
 github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290 h1:WZmJZTZvUWHLgXTDgGUGHD8PxJpjysczhpOW8pgXEKQ=
 github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290/go.mod h1:hFKBLwhDiRusJ+tDpNKHZo2FO/87g9phdQgjtGegSpk=
 github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHcQQP0w=

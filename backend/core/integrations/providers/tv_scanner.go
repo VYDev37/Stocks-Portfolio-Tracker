@@ -1,7 +1,7 @@
 package providers
 
 import (
-	"trade-tracker/core/worker"
+	"stocks-portfolio-tracker/core/worker"
 
 	"github.com/VYDev37/go-tvscanner-api/pkg/scanner"
 )

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"trade-tracker/core/domain"
+	"stocks-portfolio-tracker/core/domain"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

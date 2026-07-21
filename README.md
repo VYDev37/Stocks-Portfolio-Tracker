@@ -1,4 +1,4 @@
-# Trade Performance Tracker
+# Stocks Portfolio Tracker
 
 A premium, full-stack, real-time portfolio management and financial auditing application tailored for tracking stock portfolios, analyzing trade performances, and monitoring personal cashflows.
 
@@ -42,7 +42,7 @@ A premium, full-stack, real-time portfolio management and financial auditing app
 ## 📂 Project Structure
 
 ```text
-Trade-Performance-Tracker/
+stocks-portfolio-tracker/
 ├── backend/                    # Go API Engine
 │   ├── cmd/                    # Application Entrypoints
 │   │   └── api/                # Fiber API runtime

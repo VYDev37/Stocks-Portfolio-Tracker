@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"trade-tracker/core/domain"
-	"trade-tracker/core/repositories"
+	"stocks-portfolio-tracker/core/domain"
+	"stocks-portfolio-tracker/core/repositories"
 
 	"gorm.io/gorm"
 

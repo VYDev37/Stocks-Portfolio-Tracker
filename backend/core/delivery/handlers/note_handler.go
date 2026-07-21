@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"strconv"
-	"trade-tracker/core/domain"
-	"trade-tracker/core/services"
-	"trade-tracker/pkg/utils/format"
+	"stocks-portfolio-tracker/core/domain"
+	"stocks-portfolio-tracker/core/services"
+	"stocks-portfolio-tracker/pkg/utils/format"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"

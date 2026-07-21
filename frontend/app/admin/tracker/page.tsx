@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import TrackerClient from "./TrackerClient";
 
 export const metadata: Metadata = {
-    title: "Trade Performance Tracker - Cash Manager",
+    title: "Stocks Portfolio Tracker - Cash Manager",
     description: "Manage your cash, track incomes and expenses.",
 };
 

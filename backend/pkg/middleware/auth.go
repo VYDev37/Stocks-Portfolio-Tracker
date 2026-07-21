@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 	"time"
-	"trade-tracker/pkg/utils/auth"
+	"stocks-portfolio-tracker/pkg/utils/auth"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/golang-jwt/jwt/v5"

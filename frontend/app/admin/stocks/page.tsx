@@ -12,7 +12,7 @@ export async function generateMetadata({ searchParams }: StockParams): Promise<M
     const params = await searchParams;
     const ticker = params.symbol || "COMPOSITE";
     return {
-        title: `My Portfolio Detail - Trade Performance Tracker`,
+        title: `My Portfolio Detail - Stocks Portfolio Tracker`,
         description: `View what's happening with your assets and manage them.`,
     };
 }

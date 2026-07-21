@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"trade-tracker/core/config"
-	"trade-tracker/core/domain"
+	"stocks-portfolio-tracker/core/config"
+	"stocks-portfolio-tracker/core/domain"
 
 	"github.com/joho/godotenv"
 )

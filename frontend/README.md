@@ -1,6 +1,6 @@
-# Trade Performance Tracker - Frontend Platform
+# Stocks Portfolio Tracker - Frontend Platform
 
-This directory contains the Next.js frontend platform for the Trade Performance Tracker application. It is a highly interactive, responsive, and visually gorgeous dashboard made with **React 19**, **Next.js 16 (App Router)**, **Tailwind CSS v4**, and **Zustand**.
+This directory contains the Next.js frontend platform for the Stocks Portfolio Tracker application. It is a highly interactive, responsive, and visually gorgeous dashboard made with **React 19**, **Next.js 16 (App Router)**, **Tailwind CSS v4**, and **Zustand**.
 
 ---
 

@@ -1,6 +1,6 @@
-# Trade Performance Tracker - Backend Engine
+# Stocks Portfolio Tracker - Backend Engine
 
-This directory contains the Go backend engine for the Trade Performance Tracker application. It is built using the **Fiber v3** framework for high-performance HTTP routing, **GORM** for robust database transactions with PostgreSQL, and features clean background price synchronization workers.
+This directory contains the Go backend engine for the Stocks Portfolio Tracker application. It is built using the **Fiber v3** framework for high-performance HTTP routing, **GORM** for robust database transactions with PostgreSQL, and features clean background price synchronization workers.
 
 ## 🏗 Domain-Driven & Clean Architecture
 

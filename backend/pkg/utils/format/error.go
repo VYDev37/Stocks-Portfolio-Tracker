@@ -3,7 +3,7 @@ package format
 import (
 	"errors"
 	"fmt"
-	"trade-tracker/core/domain"
+	"stocks-portfolio-tracker/core/domain"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"

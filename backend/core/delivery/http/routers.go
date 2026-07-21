@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"trade-tracker/core/delivery/handlers"
-	"trade-tracker/core/services"
-	"trade-tracker/pkg/middleware"
+	"stocks-portfolio-tracker/core/delivery/handlers"
+	"stocks-portfolio-tracker/core/services"
+	"stocks-portfolio-tracker/pkg/middleware"
 
 	"time"
 

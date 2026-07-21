@@ -6,13 +6,13 @@ import (
 	"os"
 	"time"
 
-	"trade-tracker/core/config"
-	"trade-tracker/core/delivery/http"
-	"trade-tracker/core/integrations/providers"
-	"trade-tracker/core/repositories"
-	"trade-tracker/core/services"
-	"trade-tracker/core/worker"
-	"trade-tracker/pkg/utils/market"
+	"stocks-portfolio-tracker/core/config"
+	"stocks-portfolio-tracker/core/delivery/http"
+	"stocks-portfolio-tracker/core/integrations/providers"
+	"stocks-portfolio-tracker/core/repositories"
+	"stocks-portfolio-tracker/core/services"
+	"stocks-portfolio-tracker/core/worker"
+	"stocks-portfolio-tracker/pkg/utils/market"
 
 	"github.com/joho/godotenv"
 )

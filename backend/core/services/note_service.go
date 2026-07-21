@@ -1,8 +1,8 @@
 package services
 
 import (
-	"trade-tracker/core/domain"
-	repository "trade-tracker/core/repositories"
+	"stocks-portfolio-tracker/core/domain"
+	repository "stocks-portfolio-tracker/core/repositories"
 
 	"gorm.io/gorm"
 )

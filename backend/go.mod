@@ -1,14 +1,16 @@
-module trade-tracker
+module stocks-portfolio-tracker
 
 go 1.25.4
 
 require (
+	github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/gofiber/fiber/v3 v3.0.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.12.0
+	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/xuri/excelize/v2 v2.10.1
 	golang.org/x/text v0.35.0
 	gorm.io/driver/postgres v1.6.0
@@ -16,7 +18,6 @@ require (
 )
 
 require (
-	github.com/VYDev37/go-tvscanner-api v0.0.0-20260617083124-48c650660290 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
@@ -36,7 +37,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/richardlehane/mscfb v1.0.6 // indirect
 	github.com/richardlehane/msoleps v1.0.6 // indirect

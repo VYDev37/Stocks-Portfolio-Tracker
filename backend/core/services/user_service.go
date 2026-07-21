@@ -2,9 +2,9 @@ package services
 
 import (
 	"strings"
-	"trade-tracker/core/domain"
-	"trade-tracker/core/repositories"
-	"trade-tracker/pkg/utils/hash"
+	"stocks-portfolio-tracker/core/domain"
+	"stocks-portfolio-tracker/core/repositories"
+	"stocks-portfolio-tracker/pkg/utils/hash"
 
 	"gorm.io/gorm"
 )

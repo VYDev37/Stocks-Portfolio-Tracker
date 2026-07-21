@@ -3,7 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"trade-tracker/core/services"
+	"stocks-portfolio-tracker/core/services"
 
 	"github.com/gofiber/fiber/v3"
 )

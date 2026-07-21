@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"strings"
 
-	"trade-tracker/core/domain"
-	"trade-tracker/core/integrations/providers"
-	"trade-tracker/core/repositories"
-	"trade-tracker/pkg/utils/format"
+	"stocks-portfolio-tracker/core/domain"
+	"stocks-portfolio-tracker/core/integrations/providers"
+	"stocks-portfolio-tracker/core/repositories"
+	"stocks-portfolio-tracker/pkg/utils/format"
 
 	"gorm.io/gorm"
 )
 
 // resolveMarket menentukan nama market (untuk Yahoo Finance) berdasarkan position_type.
-// "stocks"    → IDX (Indonesia, suffix .JK)
-// "stocks_us" → US (NYSE/NASDAQ, tanpa suffix)
-// lainnya     → IDX sebagai default
+// "stocks"    â†’ IDX (Indonesia, suffix .JK)
+// "stocks_us" â†’ US (NYSE/NASDAQ, tanpa suffix)
+// lainnya     â†’ IDX sebagai default
 func resolveMarket(positionType string) string {
 	switch strings.ToLower(positionType) {
 	case "stocks_us":
@@ -232,8 +232,8 @@ func (s *positionService) GetPortfolio(userID uint64) (*domain.PortfolioResponse
 	var portfolio []domain.PortfolioItem
 	for _, p := range positions {
 		market := resolveMarket(p.PositionType)
-		// IDX: price per share × qty (qty sudah dalam satuan lembar setelah ×100)
-		// US:  price per share × qty (qty = jumlah shares)
+		// IDX: price per share Ã— qty (qty sudah dalam satuan lembar setelah Ã—100)
+		// US:  price per share Ã— qty (qty = jumlah shares)
 		currentPrice := prices[market+"_"+p.Ticker] * p.TotalQty
 
 		currency := "IDR"

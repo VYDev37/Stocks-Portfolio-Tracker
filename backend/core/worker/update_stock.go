@@ -3,7 +3,7 @@ package worker
 import (
 	"fmt"
 	"time"
-	"trade-tracker/pkg/utils/market"
+	"stocks-portfolio-tracker/pkg/utils/market"
 
 	"github.com/VYDev37/go-tvscanner-api/pkg/scanner"
 )

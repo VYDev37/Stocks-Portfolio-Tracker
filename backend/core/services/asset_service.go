@@ -5,10 +5,10 @@ import (
 	"log"
 	"strings"
 
-	"trade-tracker/core/domain"
-	"trade-tracker/core/integrations/providers"
-	"trade-tracker/core/repositories"
-	"trade-tracker/core/worker"
+	"stocks-portfolio-tracker/core/domain"
+	"stocks-portfolio-tracker/core/integrations/providers"
+	"stocks-portfolio-tracker/core/repositories"
+	"stocks-portfolio-tracker/core/worker"
 
 	"github.com/VYDev37/go-tvscanner-api/pkg/scanner"
 )

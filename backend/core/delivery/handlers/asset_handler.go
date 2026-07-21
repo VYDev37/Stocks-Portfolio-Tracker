@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"trade-tracker/core/services"
-	"trade-tracker/core/worker"
-	"trade-tracker/pkg/utils/market"
+	"stocks-portfolio-tracker/core/services"
+	"stocks-portfolio-tracker/core/worker"
+	"stocks-portfolio-tracker/pkg/utils/market"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
