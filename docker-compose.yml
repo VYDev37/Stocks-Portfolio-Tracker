@@ -2,14 +2,14 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-12345}
-      POSTGRES_DB: ${DB_NAME:-trade_tracker}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-12345}
+      - POSTGRES_DB=${DB_NAME:-trade_tracker}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backup_trade_tracker.sql:/docker-entrypoint-initdb.d/backup_trade_tracker.sql
+      - ./backup_stocks_portfolio_tracker.sql:/docker-entrypoint-initdb.d/backup_stocks_portfolio_tracker.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-trade_tracker}" ]
       interval: 5s
@@ -32,8 +32,11 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-12345}
       - DB_NAME=${DB_NAME:-trade_tracker}
       - DB_CONNECTION=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-12345}@${DB_HOST:-db}:5432/${DB_NAME:-trade_tracker}?sslmode=disable
-      - PORT=8080
+      - PORT=${PORT:-8080}
       - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+      - PRODUCTION_MODE=${PRODUCTION_MODE:-false}
+      - API_GROUP_NAME=${API_GROUP_NAME:-/api}
+      - ALLOW_ORIGINS=${ALLOW_ORIGINS:-http://localhost:3000,https://tpt-v3.vercel.app}
     depends_on:
       db:
         condition: service_healthy
@@ -42,12 +45,18 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:-dqaanj8ez}
+    env_file:
+      - ./frontend/.env
     ports:
       - "3000:3000"
     environment:
       # Tell frontend to talk to the backend container
       # Important for server-side requests inside docker network
-      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
+      - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:-dqaanj8ez}
     depends_on:
       - backend
 

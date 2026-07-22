@@ -7,12 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-06-19
 ### Added
+- Improved Docker Compose support by updating environment variables and configurations.
+
+### Fixed
+- Fixed an issue where form data was not cleared after closing the modal, causing stale ticker data to persist.
+- Fixed an issue where stale user data remained visible even after an account was deleted.
+
+### Changed
+- Increased precision for fee calculations to 4 decimal places.
+
+## [0.4.0] - 2026-06-19
+### Added
 - Added US Market support.
 - Added portfolio support for US Market. (only supporting Indonesian market before)
 
 ### Changed
 - Refactored some giant components.
-- `Indonesian Market` page -> `Stock Terminal` page
+- `Indonesian Market` page -> `Stock Terminal` page.
 
 ## [0.3.2] - 2026-06-08
 ### Added

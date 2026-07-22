@@ -50,7 +50,6 @@ func main() {
 	}
 
 	connStr := os.Getenv("DB_CONNECTION")
-	// log.Printf("Connection string: %s\n", connStr)
 	db, err := config.InitDBConnection(connStr)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)

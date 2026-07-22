@@ -75,6 +75,14 @@ export default function useStockAddPositionForm() {
         const updatedPath = queryString ? `${pathname}?${queryString}` : pathname;
 
         router.replace(updatedPath, { scroll: false });
+        
+        setTimeout(() => {
+            setFormData({ ticker: "", qty: 0, inv: 0, fee: 0, provider: "", account_no: "" });
+            setPricePerShare(0);
+            setFeePercentage(0);
+            setUseCurrent(false);
+            setMarket("IDX");
+        }, 300);
     };
 
     const handleFormChange = (field: string, value: string | number) => {
@@ -202,7 +210,7 @@ export default function useStockAddPositionForm() {
             return {
                 ...prev,
                 inv: Math.round(totalInv),
-                fee: Math.round(fee)
+                fee: Number(fee.toFixed(4))
             };
         });
     }, [formData.qty, pricePerShare, feePercentage]);

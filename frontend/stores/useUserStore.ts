@@ -22,7 +22,6 @@ export const useUser = create<UserStore>((set, get) => ({
         set({ isLoading: true });
         try {
             await get().refreshProfile();
-            set({ isAuthenticated: true });
         } catch (err) {
             set({ isAuthenticated: false, user: null });
             console.error("Error when trying to initiate user:", err);
@@ -35,7 +34,6 @@ export const useUser = create<UserStore>((set, get) => ({
         try {
             Cookies.set("token", token, { path: "/" });
             await get().refreshProfile();
-            set({ isAuthenticated: true });
         } catch (err) {
             console.error(err);
             set({ isAuthenticated: false, user: null });
@@ -50,6 +48,7 @@ export const useUser = create<UserStore>((set, get) => ({
         } catch (err) {
             //console.log("Error when trying to log out:", err)
         } finally {
+            Cookies.remove("token", { path: "/" });
             set({ user: null, isAuthenticated: false, isLoading: false });
         }
     },
@@ -58,10 +57,11 @@ export const useUser = create<UserStore>((set, get) => ({
         try {
             const { data } = await axios.get("/user/me");
             const parsed = UserProfileSchema.parse(data.data);
-            set({ user: parsed });
+            set({ user: parsed, isAuthenticated: true });
         } catch (err) {
             console.error("Error when trying to load user data:", err);
-            set({ user: null });
+            Cookies.remove("token", { path: "/" });
+            set({ user: null, isAuthenticated: false });
         } finally {
             if (!silent) set({ isLoading: false });
         }
